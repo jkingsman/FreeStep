@@ -5,7 +5,8 @@
     "bootstrap": "latest",
     "jquery": "latest",
     "typeahead.js": "latest",
-    "font-awesome": "latest"
+    "font-awesome": "latest",
+    "crypto-js": "http://crypto-js.googlecode.com/files/CryptoJS%20v3.1.2.zip"
   },
   "directory": "components",
   "homepage": "https://github.com/tamaspiros/advanced-chat",

@@ -19,6 +19,7 @@ function getHTMLStamp() {
 vars
 */
 var myRoomID = null;
+var password = null;
 var name = null;
 //mobile checking - set to false unless this catches it. From http://detectmobilebrowsers.com/
 var isMobile = false;
@@ -38,12 +39,13 @@ $(document).ready(function() {
   //enter screen
   $("#nameForm").submit(function() {
     name = $("#name").val();
-    myRoomID = $("#pass").val();
+    myRoomID = $("#room").val();
+    password = $("#pass").val();
 
     if (name === "" || name.length < 2 || myRoomID === "" || myRoomID.length < 2) {
       //we have a problem
       $("#errors").empty();
-      $("#errors").append("Please enter a name and password longer than 2 characters.");
+      $("#errors").append("Please enter a nickname and room longer than 2 characters.");
       $("#errors").show();
     } else {
       //good to go
