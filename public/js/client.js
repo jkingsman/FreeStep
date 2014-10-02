@@ -122,9 +122,7 @@ $(document).ready(function() {
      $("#msgs").append(post);
      
      //scroll to the top
-     $("#conversation").animate({
-	     scrollTop:  $("#conversation")[0].scrollHeight
-     }, 200);
+     $(window).scrollTop( $(window).scrollTop() + 5000)
    });
    
    //get a status update
