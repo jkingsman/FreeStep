@@ -1,9 +1,6 @@
 #login-screen, #main-chat-screen {
   padding-top: 10px;
 }
-#main-chat-screen #errors {
-  display: none;
-}
 .main {
   padding-top: 10px;
   text-align: center;
