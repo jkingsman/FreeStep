@@ -1,4 +1,4 @@
-# pen source, private chat goodness. Built on node.js/socket.io/Bootstrap.
+# Open source, private chat goodness. Built on node.js/socket.io/Bootstrap.
 
 ## Libraries used
 <ul>
