@@ -2,6 +2,14 @@
 
 Open source, private chat goodness. Built on node.js/socket.io/Bootstrap.
 
+
+* _It's repsonsive!_
+* It's well commented!
+* It's minimal but functional!
+* It's easy for beginners to extend!
+* It slices!
+* It dices!
+
 ## Libraries used
 <ul>
   <li>node.js / npm</li>
