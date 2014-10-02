@@ -39,28 +39,43 @@ io.sockets.on("connection", function (socket) {
 	//emits newuser
 	socket.on("joinreq", function(name, pass) {
 		var roomID = sha1(pass);
+		var allowJoin = 1;
+		var denyReason = null;
 		
-		if (1) {
-			//join the room and let everyone know
-			socket.emit("joinconfirm");
-			
+		//get the client list and push it to the client
+		var clientsInRoom = findClientsSocketByRoomId(roomID);
+		var clientsInRoomArray = [];
+		var clientsInRoomArrayScrubbed = [];
+		for(var i = 0; i < clientsInRoom.length; i++) {
+			clientsInRoomArray.push(clientsInRoom[i].nickname);
+			/* the scrubbed one has the sanitized version as used in the username
+			 * classes for typing, so we can check and avoid collisions.
+			*/
+			clientsInRoomArrayScrubbed.push(clientsInRoom[i].nickname.replace(/\W/g, ''));
+		}
+		
+		//check if the nickname exists
+		if(clientsInRoomArrayScrubbed.indexOf(name.replace(/\W/g, '')) != -1) {
+			denyReason = "Nickname is already taken.";
+			allowJoin = 0;
+		}
+		
+		if (allowJoin) {			
 			//now in the room
 			socket.join(roomID);
 			socket.nickname = name;
 			socket.roomIn = roomID;
 			
-			//get the client list and push it to the client
-			var clientsInRoom = findClientsSocketByRoomId(roomID);
-			var clientsInRoomArray = [];
-			for(var i = 0; i < clientsInRoom.length; i++) {
-				clientsInRoomArray.push(clientsInRoom[i].nickname);
-			}
-			
-			//snd the join confirmation to the client, alert the room, and push a user list
+			//send the join confirmation to the client, alert the room, and push a user list
 			socket.emit("joinconfirm");
 			
+			//add them to the user list since they're now a member
+			clientsInRoomArray.push(socket.nickname);
 			io.sockets.in(roomID).emit("newuser", name);
 			socket.emit("userlist", clientsInRoomArray);
+		}
+		else{
+			socket.emit("joinfail", denyReason);
 		}
 		
 	});
@@ -75,5 +90,10 @@ io.sockets.on("connection", function (socket) {
 		var name = socket.nickname;
 		var data = [name, msg];
 		io.sockets.in(socket.roomIn).emit("chat", data);
+	});
+	
+	//emits typing
+	socket.on("typing", function(typing) {
+		io.sockets.in(socket.roomIn).emit("typing", [typing, socket.nickname]);
 	});
 });
