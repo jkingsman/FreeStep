@@ -4,8 +4,19 @@ var express = require('express')
 , io = require("socket.io").listen(server)
 , sha1 = require('sha1');
 
+//lets us get room memebers in socket.io >=1.0
+function findClientsSocketByRoomId(roomId) {
+	var res = [], room = io.sockets.adapter.rooms[roomId];
+	if (room) {
+		for (var id in room) {
+			res.push(io.sockets.adapter.nsp.connected[id]);
+		}
+	}
+	return res;
+}
+
 app.configure(function() {
-	app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
+	app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 80);
 	app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "drunkbroncos.com");
 	app.use(express.json());
 	app.use(express.urlencoded());
@@ -24,17 +35,25 @@ server.listen(app.get('port'), app.get('ipaddr'), function(){
 	console.log('Express server listening on  IP: ' + app.get('ipaddr') + ' and port ' + app.get('port'));
 });
 
-io.set("log level", 1);
-
 io.sockets.on("connection", function (socket) {
 	//emits newuser
 	socket.on("join", function(name, pass) {
 		var roomID = sha1(pass);
 		
+		//join the room and let everyone know
 		socket.join(roomID);
 		socket.nickname = name;
 		socket.roomIn = roomID;
 		io.sockets.in(roomID).emit("newuser", name);
+		
+		//get the client list and push it to the client
+		var clientsInRoom = findClientsSocketByRoomId(roomID);
+		var clientsInRoomArray = [];
+		for(var i = 0; i < clientsInRoom.length; i++) {
+			clientsInRoomArray.push(clientsInRoom[i].nickname);
+		}
+		
+		socket.emit("userlist", clientsInRoomArray);		
 	});
 	
 	//emits goneuser
