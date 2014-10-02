@@ -61,12 +61,14 @@ $(document).ready(function() {
   //main chat screen
   $("#chatForm").submit(function() {;
     var msg = $("#msg").val();
+    var encrypted = null;
     if(msg !== "") {
       if (msg.indexOf("debug::") > -1) {
         socket.emit("debug", msg.split('::')[1]);
       }
       else{
-        socket.emit("textsend", msg);
+	 encrypted = CryptoJS.Rabbit.encrypt(msg, password);
+         socket.emit("textsend", encrypted.toString());
       }
     }
     
@@ -117,6 +119,8 @@ $(document).ready(function() {
     }
     
     //build the message
+    var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
+    msg = decrypted.toString(CryptoJS.enc.Utf8);
     var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + msgName + "</span></strong>: " + msg + "</li>";
     
     //add the message
@@ -141,7 +145,7 @@ $(document).ready(function() {
     
     //build the message
     var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>" + newName + " joined the room.</span></li>";
-   console.log(post);
+    
     //add the message
     $("#msgs").append(post);
     

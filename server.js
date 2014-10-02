@@ -65,7 +65,6 @@ io.sockets.on("connection", function (socket) {
 	socket.on("textsend", function(msg) {
 		var name = socket.nickname;
 		var data = [name, msg];
-		
 		io.sockets.in(socket.roomIn).emit("chat", data);
 	});
 	

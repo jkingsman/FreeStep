@@ -1,9 +1,10 @@
 # FreeStep
 
-Open source, private chat goodness. Built on node.js/socket.io/Bootstrap.
+Open source, fully encrypted chat goodness. Built on node.js/socket.io/Bootstrap.
 
 
 * _It's repsonsive!_
+* It's encrypted - the server never knows your key
 * It's 100% HTML5 compliant
 * It's well commented!
 * It's minimal but functional!
