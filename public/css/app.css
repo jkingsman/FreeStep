@@ -1,0 +1,34 @@
+#login-screen, #main-chat-screen {
+  padding-top: 10px;
+}
+.main {
+  padding-top: 10px;
+  text-align: center;
+}
+.full-height {
+  height: 100%;
+}
+#conversation {
+  font-size: 18px;
+  margin: 0px;
+  height: 100%;
+  overflow: auto;
+  padding-bottom: 40px;
+}
+.alert{
+  z-index: 100000;
+}
+.final {
+  font-color: #000;
+}
+.interim {
+  font-color: #f00;
+}
+.chat-input {
+  position: fixed;
+  bottom: 0;
+  background-color: white;
+}
+.input-group {
+  padding-bottom: 10px;
+}
