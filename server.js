@@ -37,23 +37,32 @@ server.listen(app.get('port'), app.get('ipaddr'), function(){
 
 io.sockets.on("connection", function (socket) {
 	//emits newuser
-	socket.on("join", function(name, pass) {
+	socket.on("joinreq", function(name, pass) {
 		var roomID = sha1(pass);
 		
-		//join the room and let everyone know
-		socket.join(roomID);
-		socket.nickname = name;
-		socket.roomIn = roomID;
-		io.sockets.in(roomID).emit("newuser", name);
-		
-		//get the client list and push it to the client
-		var clientsInRoom = findClientsSocketByRoomId(roomID);
-		var clientsInRoomArray = [];
-		for(var i = 0; i < clientsInRoom.length; i++) {
-			clientsInRoomArray.push(clientsInRoom[i].nickname);
+		if (1) {
+			//join the room and let everyone know
+			socket.emit("joinconfirm");
+			
+			//now in the room
+			socket.join(roomID);
+			socket.nickname = name;
+			socket.roomIn = roomID;
+			
+			//get the client list and push it to the client
+			var clientsInRoom = findClientsSocketByRoomId(roomID);
+			var clientsInRoomArray = [];
+			for(var i = 0; i < clientsInRoom.length; i++) {
+				clientsInRoomArray.push(clientsInRoom[i].nickname);
+			}
+			
+			//snd the join confirmation to the client, alert the room, and push a user list
+			socket.emit("joinconfirm");
+			
+			io.sockets.in(roomID).emit("newuser", name);
+			socket.emit("userlist", clientsInRoomArray);
 		}
 		
-		socket.emit("userlist", clientsInRoomArray);		
 	});
 	
 	//emits goneuser

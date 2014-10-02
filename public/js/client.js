@@ -1,13 +1,11 @@
 /*
 Functions
 */
-function toggleNameForm() {
-   $("#login-screen").toggle();
+function showChat() {
+   $("#login-screen").hide();
+   $("#main-chat-screen").show();
 }
 
-function toggleChatWindow() {
-  $("#main-chat-screen").toggle();
-}
 
 function getHTMLStamp() {
   var date = new Date();
@@ -48,48 +46,29 @@ $(document).ready(function() {
       $("#errors").append("Please enter a nickname and room longer than 2 characters.");
       $("#errors").show();
     } else {
-      //good to go
-      $("#errors").hide();
-      $("#room-title").text(myRoomID + " members:");
-      socket.emit("join", name, myRoomID);
-      toggleNameForm();
-      toggleChatWindow();
-      $("#msg").focus();
+      //good to go, request to join
+      $("#connect-status").append("<li>Sending join request</li>");
+      socket.emit("joinreq", name, myRoomID);
+      $("#connect-status").append("<li>Join request sent</li>");
     }
   });
 
-  //main chat screen
-  $("#chatForm").submit(function() {;
-    var msg = $("#msg").val();
-    var encrypted = null;
-    if(msg !== "") {
-      if (msg.indexOf("debug::") > -1) {
-        socket.emit("debug", msg.split('::')[1]);
-      }
-      else{
-	 encrypted = CryptoJS.Rabbit.encrypt(msg, password);
-         socket.emit("textsend", encrypted.toString());
-      }
-    }
-    
-    //clear the message bar after send
-    $("#msg").val("");
-    
-    //if they're mobile, close the keyboard
-    if (isMobile) {
-      $("#msg").blur()
-    }
-  });
-
-  
-  /* 
+   /* 
    *
-   * SOCKETS
-   *
+   * Connection operations
    *
    */
-  
-  
+   socket.on("joinconfirm", function() {
+      $("#connect-status").append("<li>Join request approved</li>");
+      
+      $("#connect-status").append("<li>Setting room title...</li>");
+      $("#room-title").text(myRoomID + " members:");
+      
+      $("#errors").hide();
+      $("#msg").focus();
+      showChat();      
+   });
+
   
   /* 
    *
@@ -97,40 +76,65 @@ $(document).ready(function() {
    *
    */
   
-  socket.on("update", function(msg) {
-    //build the message
-    var post = "<li>" + getHTMLStamp() + "<span class='text-danger'>" + msg + "</span></li>";
-    
-    //add the message
-    $("#msgs").append(post);
-  });
-
-  socket.on("chat", function(payload) {
-    var msgName = payload[0];
-    var msg = payload[1];
-    var userColor = null;
-    
-    //color green for the user, blue for others
-    if (name == msgName) {
-      userColor = 'text-success';
-    }
-    else{
-      userColor = 'text-primary';
-    }
-    
-    //build the message
-    var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
-    msg = decrypted.toString(CryptoJS.enc.Utf8);
-    var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + msgName + "</span></strong>: " + msg + "</li>";
-    
-    //add the message
-    $("#msgs").append(post);
-    
-    //scroll to the top
-    $("#conversation").animate({
-            scrollTop:  $("#conversation")[0].scrollHeight
-    }, 200);
-  });
+  //send a message
+   $("#chatForm").submit(function() {
+      var msg = $("#msg").val();
+      var encrypted = null;
+      if(msg !== "") {
+	 if (msg.indexOf("debug::") > -1) {
+	    socket.emit("debug", msg.split('::')[1]);
+	 }
+	 else{
+	    encrypted = CryptoJS.Rabbit.encrypt(msg, password);
+	    socket.emit("textsend", encrypted.toString());
+	 }
+      }
+      
+      //clear the message bar after send
+      $("#msg").val("");
+      
+      //if they're mobile, close the keyboard
+      if (isMobile) {
+	 $("#msg").blur()
+      }
+   });
+  
+   //get a chat message
+   socket.on("chat", function(payload) {
+     var msgName = payload[0];
+     var msg = payload[1];
+     var userColor = null;
+     
+     //color green for the user, blue for others
+     if (name == msgName) {
+       userColor = 'text-success';
+     }
+     else{
+       userColor = 'text-primary';
+     }
+     
+     //build the message
+     var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
+     msg = decrypted.toString(CryptoJS.enc.Utf8);
+     var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + msgName + "</span></strong>: " + msg + "</li>";
+     
+     //add the message
+     $("#msgs").append(post);
+     
+     //scroll to the top
+     $("#conversation").animate({
+	     scrollTop:  $("#conversation")[0].scrollHeight
+     }, 200);
+   });
+   
+   //get a status update
+   socket.on("update", function(msg) {
+     //build the message
+     var post = "<li>" + getHTMLStamp() + "<span class='text-danger'>" + msg + "</span></li>";
+     
+     //add the message
+     $("#msgs").append(post);
+   });
   
   
   
