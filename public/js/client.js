@@ -23,7 +23,7 @@ var password = null;
 var name = null;
 
 //causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 0;
+var debug = 1;
 
 //mobile checking
 var isMobile = false;
@@ -86,7 +86,7 @@ $(document).ready(function() {
       $("#connect-status").append("<li>Join request approved</li>");
       
       $("#connect-status").append("<li>Setting room title...</li>");
-      $("#room-title").html(_.escape(myRoomID) + " members:");
+      $("#room-title").html(_.escape(myRoomID));
       
       $("#errors").hide();
       $("#msg").focus();
@@ -131,45 +131,54 @@ $(document).ready(function() {
   
    //get a chat message
    socket.on("chat", function(payload) {
-     var msgName = payload[0];
-     var msg = payload[1];
-     var userColor = null;
-     
-     //color green for the user, blue for others
-     if (name == msgName) {
-       userColor = 'text-success';
-     }
-     else{
-       userColor = 'text-primary';
-     }
-     
-
-     //build the message
+      var type = payload[0];
+      var msgName = payload[1];
+      var msg = payload[2];
+      var msgCore = null;
+      
+     //decrypt the message
      try{
        var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
        msg = decrypted.toString(CryptoJS.enc.Utf8);
-       var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: " + _.escape(msg) + "</li>";
      }
      catch(err){
        var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: Cannot decrypt: " + _.escape(msg) + "</li>";
      }
 
-     //add the message
-     $("#msgs").append(post);
      
-     //scroll to the top
-     $(window).scrollTop( $(window).scrollTop() + 5000)
+      //build message core
+      if(type == 0){
+	msgCore = _.escape(msg);
+      }
+      else if(type == 1){
+	 msgCore = "<img style=\"max-width:20%\" src=\"" + msg + "\">";
+      }
+      
+      //build whole message
+      if (name == msgName){
+	 //this is one of our posts
+	 var post = "<li class=\"pull-right\">" + getHTMLStamp() + "<strong><span class=\"text-success\">" + _.escape(msgName) + "</span></strong>: " + msgCore + "</li><div class=\"clearfix\"></div>";
+      }
+      else{
+	 var post = "<li>" + getHTMLStamp() + "<strong><span>" + _.escape(msgName) + "</span></strong>: " + msgCore + "</li>";
+      }
+           
+      $("#msgs").append(post);
+      
+      //scroll to the bottom
+      $(window).scrollTop( $(window).scrollTop() + 5000)
    });
    
    //get a data message
    socket.on("datachat", function(payload) {
      var msgName = payload[0];
      var msg = payload[1];
-     var userColor = null;
+     var userColor, floatSide = '';
      
      //color green for the user, blue for others
      if (name == msgName) {
        userColor = 'text-success';
+       floatSide = "style=\"float: right;\"";
      }
      else{
        userColor = 'text-primary';
@@ -180,7 +189,7 @@ $(document).ready(function() {
      try{
        var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
        msg = decrypted.toString(CryptoJS.enc.Utf8);
-       var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: <img style=\"max-width:40%\" src=\"" + msg + "\"></li>";
+       var post = "<li " + floatSide + ">" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: <img style=\"max-width:40%\" src=\"" + msg + "\"></li>";
      }
      catch(err){
        var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: Cannot decrypt image file.</li>";
@@ -266,7 +275,7 @@ $(document).ready(function() {
     $("#msgs").append(post);
     
     //add user to the user list
-    $("#members").append("<li id=\"user-" + newName.replace(/\W/g, '') + "\">" + _.escape(newName) + "<span id=\"typing-" + newName.replace(/\W/g, '') + "\" style=\"display: none;\"> (typing)</span></li>");
+    $("#members").append("<li id=\"user-" + newName.replace(/\W/g, '') + "\">" + _.escape(newName) + " <span id=\"typing-" + newName.replace(/\W/g, '') + "\" style=\"display: none;\" class=\"badge\">...</span></li>");
   });
   
    //User leaves the room
@@ -281,7 +290,7 @@ $(document).ready(function() {
    socket.on("userlist", function(users) {
       $("[id^='user-']").remove();
       users.forEach(function(user) {
-	 $("#members").append("<li id=\"user-" + user.replace(/\W/g, '') + "\">" +_.escape(user) + "<span id=\"typing-" + user.replace(/\W/g, '') + "\" style=\"display: none;\"> (typing)</span></li>");
+	 $("#members").append("<li id=\"user-" + user.replace(/\W/g, '') + "\">" +_.escape(user) + " <span id=\"typing-" + user.replace(/\W/g, '') + "\" style=\"display: none;\" class=\"badge\">...</span></li>");
       });	
    });
 

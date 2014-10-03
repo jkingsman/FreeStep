@@ -89,8 +89,9 @@ io.sockets.on("connection", function (socket) {
 	
 	//emits chat
 	socket.on("textsend", function(msg) {
+		var type = 0;
 		var name = socket.nickname;
-		var data = [name, msg];
+		var data = [type, name, msg];
 		io.sockets.in(socket.roomIn).emit("chat", data);
 	});
 	
@@ -101,12 +102,11 @@ io.sockets.on("connection", function (socket) {
 			socket.emit("ratelimit");
 		}else{
 			lastImageSend = currTime;
+			var type = 1;
 			var name = socket.nickname;
-			var data = [name, msg];
-			io.sockets.in(socket.roomIn).emit("datachat", data);
+			var data = [type, name, msg];
+			io.sockets.in(socket.roomIn).emit("chat", data);
 		}
-		
-		
 	});
 	
 	//emits typing
