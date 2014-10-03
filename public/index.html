@@ -7,12 +7,10 @@
     <link rel="stylesheet" href="components/font-awesome/css/font-awesome.css">
     <link rel="stylesheet" href="css/app.css">
     <meta charset="UTF-8">
-      
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="apple-touch-icon" href="img/icon.png"/>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -29,12 +27,10 @@
     <meta name="msapplication-square150x150logo" content="mediumtile.png" />
     <meta name="msapplication-wide310x150logo" content="widetile.png" />
     <meta name="msapplication-square310x310logo" content="largetile.png" />
-
-    
   </head>
   <body class="full-height" id="main-body">
     <div id="overlay"><h1 id="overlay-message"></h1></div>
-    <div style="margin: 8px;" id="login-screen">
+    <div id="login-screen">
       <div class="row">
 	<div class="main col-md-4 col-md-offset-4">
           <h1><i class="glyphicon glyphicon-retweet"></i> FreeStep</h1>
@@ -42,17 +38,17 @@
             <form class="form" id="nameForm">
               <div class="form-group">
                 
-                <div class="input-group" style="padding-bottom: 10px;">
+                <div class="input-group">
                   <span class="input-group-addon">@</span>
                   <input type="text" class="form-control input-lg" placeholder="nickname" id="name"><br /> 
                 </div>
                 
-                <div class="input-group" style="padding-bottom: px;">
+                <div class="input-group">
                   <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
                   <input type="text" class="form-control input-lg" placeholder="room name" id="room"><br /><br />
                 </div>
 		
-		<div class="input-group" style="padding-bottom: px;">
+		<div class="input-group">
                   <span class="input-group-addon"><i class="glyphicon glyphicon-asterisk"></i></span>
                   <input type="password" class="form-control input-lg" placeholder="password" id="pass"><br /><br />
                 </div>
@@ -63,8 +59,13 @@
 	</div>
       </div>
       <div class="row">
-	<h1 class="text-center">Why FreeStep?</h1>
-	<div class="col-md-2 col-md-offset-3">
+	<div class="col-lg-12">
+	  <h1 class="text-center">Why FreeStep?</h1>
+	</div>
+	<div class="col-md-3">
+	  <!-- empty  so it collapses easier; offsets get weird. -->
+	</div>
+	<div class="col-md-2">
 	  <h2 class="text-center"><i class="glyphicon glyphicon-ok"></i> Simple</h1>
 	  <p class="text-justify">With an elegantly minimal interface and drag and drop file uploads, Freestep does what you need without clutter or advertisements.</p>
 	</div>
@@ -76,10 +77,60 @@
 	  <h2 class="text-center"><i class="glyphicon glyphicon-eye-open"></i> Transparent</h1>
 	  <p class="text-justify">FreeStep is entirely open source on <a href="https://github.com/jkingsman/FreeStep">GitHub</a>, available for code review or customization under the MIT license. FreeStep never advertises, logs, or tracks - ever.</p>
 	</div>
+	<div class="col-md-3">
+	  <!-- empty  so it collapses easier; offsets get weird. -->
+	</div>
       </div>
     </div>
-  
+  <div id="main-chat-screen" style="display: none;">
+  <div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm padded">
+      <h1 class="visible-md visible-lg room-title text-center" style="color: #777;">Room Name</h1>
+      <div class="panel panel-default">
+	  <div class="panel-heading">
+	    <h3 class="panel-title">Members</h3>
+	  </div>
+	  <div class="panel-body">
+	    <ul id="members" class="list-unstyled"></ul>
+	  </div>
+	</div>
+	<div class="panel panel-default">
+	  <div class="panel-heading">
+	    <h3 class="panel-title" id="room-title">Configuration</h3>
+	  </div>
+	  <div class="panel-body">
+	    <label>
+	      <input type="checkbox" id="config-timestamps" checked="checked"> Show timestamps
+	    </label>
+	    <label>
+	      <input type="checkbox" id="config-files" checked="checked"> Recieve images
+	    </label>
+	    <label>
+	      <input type="checkbox" id="config-audio" checked="checked"> Play new message alert
+	    </label>
+	  </div>
+	</div>
+    </div>
 
+    <div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
+      <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <span class="navbar-brand room-title">Room Name</span>
+    </div>
+
+    <div id="conversation">
+      <div id="msgs"></div>
+    </div>
+    <form id="chatForm" class="chat-input">
+    <div class="input-group">
+	<input type="text" class="form-control" id="msg" placeholder="Message">
+	<span class="input-group-btn">
+	    <input type="submit" class="btn btn-success" value="Submit">
+	</span>
+    </div>
+  </div>
     <script src="components/crypto-js/rollups/rabbit.js"></script>
     <script src="components/underscore/underscore-min.js"></script>
     <script src="components/jquery/dist/jquery.min.js"></script>

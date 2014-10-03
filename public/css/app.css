@@ -1,6 +1,15 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  padding: 50px 0 0 0;
+}
+
 #login-screen, #main-chat-screen {
   padding-top: 10px;
 }
+
 #overlay {
   position: absolute;
   height: 100%;
@@ -10,13 +19,7 @@
   text-align: center;
   display: none;
 }
-.main {
-  padding-top: 10px;
-  text-align: center;
-}
-.full-height {
-  height: 100%;
-}
+
 #conversation {
   font-size: 18px;
   margin: 0px;
@@ -24,31 +27,133 @@
   overflow: auto;
   padding-bottom: 40px;
 }
-.alert{
-  z-index: 100000;
-}
-.chat-input {
-  position: fixed;
-  bottom: 0;
-  background-color: white;
-}
-@media (min-width: 600px) {
-  .chat-input {
-    width: 80%;
-  }
-}
+
+/*
+ *
+ * General Formatting
+ *
+ */
 
 .input-group {
   padding-bottom: 10px;
 }
-#sidebar.affix-top {
-  position: static;
-  margin-top:30px;
-  width:228px;
- }
 
-#sidebar.affix {
+.main {
+  padding-top: 10px;
+  text-align: center;
+}
+
+/*
+ *
+ * Custom message classes
+ *
+ */ 
+
+/*
+ * General message classes
+ */
+
+.message {
+  max-width:50%;
+  display:inline-block;
+}
+
+.message img {
+  max-width:100%;
+  padding:10px 0;
+}
+
+.message-body {
+  border-radius:15px;
+  float:right;
+  padding:0 10px;
+}
+
+.status-message,.message-metadata {
+  text-align:center;
+  font-style:italic;
+  color:#828282;
+}
+
+/*
+ * Per-person customization
+ */ 
+
+.my-message,.my-message .message-metadata {
+  float:right;
+}
+
+.my-message .message-body {
+  background:#c7e2ff;
+}
+
+.their-message .message-body {
+  float:left;
+  background:#c8ffc8;
+}
+
+
+/*
+ *
+ * Anchor chat input to bottom
+ *
+ */ 
+.chat-input {
   position: fixed;
-  top:70px;
-  width:228px;
+  bottom: 0;
+  background-color: white;
+  margin-right: 10px;
+}
+
+/*
+ * 
+ * Sliding Nav Menu Handling
+ *
+ */
+
+.navmenu {
+  padding-top: 50px;
+}
+
+.padded {
+  padding: 10px;
+}
+
+.navbar {
+  display: block;
+  text-align: center;
+}
+.navbar-brand {
+  display: inline-block;
+  float: none;
+}
+.navbar-toggle {
+  position: absolute;
+  float: left;
+  margin-left: 15px;
+}
+
+.container {
+  max-width: 100%;
+}
+
+@media (min-width: 1px) {
+  .navbar-toggle {
+    display: block !important;
+  }
+}
+
+@media (min-width: 992px) {
+  body {
+    padding: 0 0 0 300px;
+  }
+  .navmenu {
+    padding-top: 0;
+  }
+  .navbar {
+    display: none !important; /* IE8 fix */
+  }
+  #login-screen {
+    margin-left: -300px;
+  }
 }

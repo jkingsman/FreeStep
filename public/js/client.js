@@ -23,14 +23,17 @@ function getHTMLStamp(align) {
    var date = new Date();
    var stamp = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
    if (align == 'left') {
-      return "<span class=\"text-muted timestamp\"><em>" + stamp + " </em></span>";
+      return "<span class=\"timestamp\">" + stamp + " </span>";
    } else {
-      return "<span class=\"text-muted timestamp pull-right\"><em>" + stamp + " </em></span>";
+      return "<span class=\"timestamp pull-right\">" + stamp + " </span>";
    }
 }
 
 function postChat(message) {
    $("#msgs").append(message);
+   $("#msgs").append("<div class=\"clearfix\"></div>");
+   $(window).scrollTop($(window).scrollTop() + 5000)
+   
    if (configAudio) {
       notify.play();
    }
@@ -159,7 +162,7 @@ $(document).ready(function () {
       $("#connect-status").append("<li>Join request approved</li>");
 
       $("#connect-status").append("<li>Setting room title...</li>");
-      $("#room-title").html(_.escape(myRoomID));
+      $(".room-title").html(_.escape(myRoomID));
       document.title = "FreeChat | " + myRoomID;
 
       $("#errors").hide();
@@ -228,7 +231,7 @@ $(document).ready(function () {
       }
       else if (type == 1) {
          if (configFile) {
-            msgCore = "<img style=\"max-width: 30%\" src=\"" + msg + "\">";
+            msgCore = "<img src=\"" + msg + "\">";
          }
          else {
             msgCore = "<span class=\"text-danger\">Image blocked by configuration</span>";
@@ -236,22 +239,25 @@ $(document).ready(function () {
       }
 
       //post the message
-      postChat("<li>" + getHTMLStamp() + "<strong><span class=\"" + defaultColor + "\">" + _.escape(msgName) + "</span></strong> " + msgCore + "</li>");
-
-      //scroll to the bottom
-      $(window).scrollTop($(window).scrollTop() + 5000)
+      if (name == msgName) {
+	 //this is our message; format accordingly
+         postChat("<div class=\"message my-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\"> " + _.escape(msgName) + " " + getHTMLStamp() + "</span></div>");
+      }
+      else {
+         postChat("<div class=\"message their-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\">" + getHTMLStamp() + "<strong>" + _.escape(msgName) + "</strong></span></div>");
+      } 
    });
 
    //get a status update
    socket.on("update", function (msg) {
       //post the message
-      postChat("<li>" + getHTMLStamp() + "<span class='text-danger'>" + _.escape(msg) + "</span></li>");
+      postChat("<div class=\"status-message\">" + _.escape(msg) + "</div>");
    });
 
    //we're being rate limited...
    socket.on("rateLimit", function (msg) {
       //post the message
-      postChat("<li>" + getHTMLStamp() + "<span class='text-danger'>Please wait before doing that again.</span></li>");
+      postChat("<div class=\"status-message text-warning\">Please wait before doing that again.</div>");
    });
 
 /* 
@@ -302,7 +308,7 @@ $(document).ready(function () {
    socket.on("newUser", function (newName) {
 
       //build the message
-      postChat("<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(newName) + " joined the room.</span></li>");
+      postChat("<div class=\"status-message\">" + _.escape(newName) + " joined the room.</li>");
 
       //add user to the user list
       $("#members").append("<li id=\"user-" + newName.replace(/\W/g, '') + "\">" + _.escape(newName) + " <span id=\"typing-" + newName.replace(/\W/g, '') + "\" style=\"display: none;\" class=\"badge\">...</span></li>");
@@ -310,7 +316,7 @@ $(document).ready(function () {
 
    //User leaves the room
    socket.on("goneUser", function (leftName) {
-      postChat("<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(leftName) + " left the room.</span></li>");
+      postChat("<div class=\"status-message\">" + _.escape(leftName) + " left the room.</div>");
       $("#user-" + leftName).remove();
    });
 
@@ -350,7 +356,7 @@ $(document).ready(function () {
       for (var i = 0, f; f = files[i]; i++) {
          // only process image files.
          if (!f.type.match('image.*')) {
-            var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Please upload images only.</span></li>";
+            var post = "<div class=\"status-message\">Please upload images only.</div>";
             $("#msgs").append(post);
             continue;
          }
@@ -361,20 +367,20 @@ $(document).ready(function () {
          reader.onload = (function (theFile) {
             return function (e) {
                //alert the user
-               var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Processing & encrypting image... Please wait.</span></li>";
+               var post = "<div class=\"status-message\">Processing & encrypting image... Please wait.</div>";
                $("#msgs").append(post);
 
                var image = e.target.result;
 
                //restrict to fiveish megs (not super accurate because base64, but eh)
                if (image.length > 5000000) {
-                  var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Image too large.</span></li>";
+                  var post = "<div class=\"status-message\">Image too large.</li>";
                   $("#msgs").append(post);
                } else {
                   encrypted = CryptoJS.Rabbit.encrypt(image, password);
                   socket.emit("dataSend", encrypted.toString());
 
-                  var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Image sent. Distributing...</span></li>";
+                  var post = "<div class=\"status-message\">Image sent. Distributing...</li>";
                   $("#msgs").append(post);
                }
             };
