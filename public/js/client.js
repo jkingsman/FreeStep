@@ -33,7 +33,7 @@ var password = null;
 var name = null;
 
 //causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 1;
+var debug = 0;
 
 //mobile checking
 var isMobile = false;
