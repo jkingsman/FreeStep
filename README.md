@@ -20,7 +20,7 @@ Open source, fully encrypted chat goodness. Built on node.js/socket.io/Bootstrap
   <li>express</li>
 </ul>
 
-Super easy to develop on your own. Will expand this later; pardon the domain name used in dev - it was all I had unused.
+Super easy to develop on your own.
 
 Special thanks to https://github.com/tamaspiros/advanced-chat, whose project was my main teacher of node and socket.
 
@@ -32,12 +32,12 @@ Special thanks to https://github.com/tamaspiros/advanced-chat, whose project was
 
 * Change port and host to your own port and IP in `server.js`:
 ```js
-app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
-app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "drunkbroncos.com");
+app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 80);
+app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "168.235.152.38");
 ```
 * Change port and host to your own port and IP in `public/js/client.js`:
 ```js
-var socket = io.connect("drunkbroncos.com:3000");
+var socket = io.connect("168.235.152.38:80");
 ```
-* Install the app (`npm install`)
-* Run the app (`npm start`)
+* Install the app (`sudo npm install`)
+* Run the app (`sudo npm start`) (`sudo` required due to the low port number)
