@@ -29,6 +29,12 @@
   bottom: 0;
   background-color: white;
 }
+
+@media (min-width: 600px) {
+  .chat-input {
+    width: 80%;
+  }
+}
 .input-group {
   padding-bottom: 10px;
 }
