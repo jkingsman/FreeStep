@@ -17,10 +17,24 @@ function decryptOrFail(data, password) {
    return decrypted;
 }
 
-function getHTMLStamp() {
+function getHTMLStamp(align) {
+   align = typeof align !== 'undefined' ? align : 'left';
+   
    var date = new Date();
    var stamp = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-   return "<span class=\"text-muted timestamp\"><em>" + stamp + " </em></span>";
+   if (align == 'left') {
+      return "<span class=\"text-muted timestamp\"><em>" + stamp + " </em></span>";
+   }else{
+      return "<span class=\"text-muted timestamp pull-right\"><em>" + stamp + " </em></span>";      
+   }
+}
+
+function postChat(message) {
+   $("#msgs").append(message);
+   if (configAudio) {
+      notify.play();
+   }
+   
 }
 
 /*
@@ -28,12 +42,13 @@ vars
 */
 
 //vars for room data
-var myRoomID = null;
-var password = null;
-var name = null;
+var myRoomID = password = name = null;
+
+//config vars
+var configFile = configAudio = true;
 
 //causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 0;
+var debug = 1;
 
 //mobile checking
 var isMobile = false;
@@ -44,6 +59,9 @@ var isMobile = false;
 //typing vars
 var typing = false;
 var stopTimeout = undefined;
+
+//alert sound
+var notify = new Audio('notify.wav');
 
 $(document).ready(function () {
    var socket = io.connect("168.235.152.38:80");
@@ -100,6 +118,14 @@ $(document).ready(function () {
        
        $('#config-timestamps').change(function() {
               $('.timestamp').toggle();
+       });
+       
+      $('#config-files').change(function() {
+              configFile = $('#config-files').is(':checked');
+      });
+	      
+       $('#config-audio').change(function() {
+              configAudio = $('#config-audio').is(':checked');
     });
 
     /* 
@@ -163,23 +189,31 @@ $(document).ready(function () {
       var msgName = payload[1];
       var msg = decryptOrFail(payload[2], password);
       var msgCore = null;
-
-      //build message core
-      if (type == 0) {
-         msgCore = _.escape(msg);
-      } else if (type == 1) {
-         msgCore = "<img style=\"max-width:20%\" src=\"" + msg + "\">";
-      }
-
-      //build whole message
+      
       if (name == msgName) {
-         //this is one of our posts
-         var post = "<li class=\"pull-right\">" + msgCore + " <strong><span class=\"text-success\">" + _.escape(msgName) + "</span></strong> " + getHTMLStamp() + "</li><div class=\"clearfix\"></div>";
-      } else {
-         var post = "<li>" + getHTMLStamp() + "<strong><span>" + _.escape(msgName) + "</span></strong> " + msgCore + "</li>";
+	 //this is our own post; color it
+	 var defaultColor = "text-success";
+      }
+      else{
+	 //it's not ours
+	 var defaultColor = "text-default";
+      }
+      
+      //assemble message core
+      if (type == 0) {
+	 msgCore = _.escape(msg);
+      }
+      else if (type == 1) {
+	 if(configFile){
+	    msgCore = "<img style=\"max-width: 30%\" src=\"" + msg + "\">";
+	 }
+	 else{
+	    msgCore = "<span class=\"text-danger\">Image blocked by configuration</span>";
+	 }
       }
 
-      $("#msgs").append(post);
+      //post the message
+      postChat("<li>" + getHTMLStamp() + "<strong><span class=\"" + defaultColor+ "\">" + _.escape(msgName) + "</span></strong> " + msgCore + "</li>");
 
       //scroll to the bottom
       $(window).scrollTop($(window).scrollTop() + 5000)
@@ -187,20 +221,14 @@ $(document).ready(function () {
 
    //get a status update
    socket.on("update", function (msg) {
-      //build the message
-      var post = "<li>" + getHTMLStamp() + "<span class='text-danger'>" + _.escape(msg) + "</span></li>";
-
-      //add the message
-      $("#msgs").append(post);
+      //post the message
+      postChat("<li>" + getHTMLStamp() + "<span class='text-danger'>" + _.escape(msg) + "</span></li>");
    });
 
    //we're being rate limited...
    socket.on("ratelimit", function (msg) {
-      //build the message
-      var post = "<li>" + getHTMLStamp() + "<span class='text-danger'>Please wait before doing that again.</span></li>";
-
-      //add the message
-      $("#msgs").append(post);
+      //post the message
+      postChat("<li>" + getHTMLStamp() + "<span class='text-danger'>Please wait before doing that again.</span></li>");
    });
 
 /* 
@@ -251,10 +279,7 @@ $(document).ready(function () {
    socket.on("newuser", function (newName) {
 
       //build the message
-      var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(newName) + " joined the room.</span></li>";
-
-      //add the message
-      $("#msgs").append(post);
+      postChat("<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(newName) + " joined the room.</span></li>");
 
       //add user to the user list
       $("#members").append("<li id=\"user-" + newName.replace(/\W/g, '') + "\">" + _.escape(newName) + " <span id=\"typing-" + newName.replace(/\W/g, '') + "\" style=\"display: none;\" class=\"badge\">...</span></li>");
@@ -262,9 +287,7 @@ $(document).ready(function () {
 
    //User leaves the room
    socket.on("goneuser", function (leftName) {
-      var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(leftName) + " left the room.</span></li>";
-
-      $("#msgs").append(post);
+      postChat("<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(leftName) + " left the room.</span></li>");
       $("#user-" + leftName).remove();
    });
 
@@ -323,7 +346,7 @@ $(document).ready(function () {
                   encrypted = CryptoJS.Rabbit.encrypt(image, password);
                   socket.emit("datasend", encrypted.toString());
 
-                  var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Image sent.</span></li>";
+                  var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Image sent. Distributing...</span></li>";
                   $("#msgs").append(post);
                }
             };
