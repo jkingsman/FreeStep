@@ -158,10 +158,51 @@ $(document).ready(function() {
      $(window).scrollTop( $(window).scrollTop() + 5000)
    });
    
+   //get a data message
+   socket.on("datachat", function(payload) {
+     var msgName = payload[0];
+     var msg = payload[1];
+     var userColor = null;
+     
+     //color green for the user, blue for others
+     if (name == msgName) {
+       userColor = 'text-success';
+     }
+     else{
+       userColor = 'text-primary';
+     }
+     
+
+     //build the message
+     try{
+       var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
+       msg = decrypted.toString(CryptoJS.enc.Utf8);
+       var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: <img style=\"max-width:40%\" src=\"" + msg + "\"></li>";
+     }
+     catch(err){
+       var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: Cannot decrypt image file.</li>";
+     }
+
+     //add the message
+     $("#msgs").append(post);
+     
+     //scroll to the top
+     $(window).scrollTop( $(window).scrollTop() + 5000)
+   });
+   
    //get a status update
    socket.on("update", function(msg) {
      //build the message
      var post = "<li>" + getHTMLStamp() + "<span class='text-danger'>" + _.escape(msg) + "</span></li>";
+     
+     //add the message
+     $("#msgs").append(post);
+   });
+   
+   //we're being rate limited...
+   socket.on("ratelimit", function(msg) {
+     //build the message
+     var post = "<li>" + getHTMLStamp() + "<span class='text-danger'>Please wait before doing that again.</span></li>";
      
      //add the message
      $("#msgs").append(post);
@@ -288,7 +329,10 @@ $(document).ready(function() {
 	       }
 	       else{
 		  encrypted = CryptoJS.Rabbit.encrypt(image, password);
-		  socket.emit("textsend", encrypted.toString());
+		  socket.emit("datasend", encrypted.toString());
+		  
+		  var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Image sent.</span></li>";
+		  $("#msgs").append(post);
 	       }
 	    };
 	 })(f);

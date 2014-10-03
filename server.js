@@ -36,6 +36,8 @@ server.listen(app.get('port'), app.get('ipaddr'), function(){
 });
 
 io.sockets.on("connection", function (socket) {
+	var lastImageSend = 0;
+	
 	//emits newuser
 	socket.on("joinreq", function(name, pass) {
 		var roomID = sha1(pass);
@@ -90,6 +92,21 @@ io.sockets.on("connection", function (socket) {
 		var name = socket.nickname;
 		var data = [name, msg];
 		io.sockets.in(socket.roomIn).emit("chat", data);
+	});
+	
+	//emits data
+	socket.on("datasend", function(msg) {
+		var currTime = (new Date).getTime();
+		if (currTime - lastImageSend < 5000) {
+			socket.emit("ratelimit");
+		}else{
+			lastImageSend = currTime;
+			var name = socket.nickname;
+			var data = [name, msg];
+			io.sockets.in(socket.roomIn).emit("datachat", data);
+		}
+		
+		
 	});
 	
 	//emits typing
