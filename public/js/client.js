@@ -83,7 +83,7 @@ $(document).ready(function () {
       myRoomID = "TestRoom1";
       password = "testpwd";
 
-      socket.emit("joinreq", name, myRoomID);
+      socket.emit("joinReq", name, myRoomID);
    }
 
    //check file upload support
@@ -105,7 +105,7 @@ $(document).ready(function () {
       } else {
          //good to go, request to join
          $("#connect-status").append("<li>Sending join request</li>");
-         socket.emit("joinreq", name, myRoomID);
+         socket.emit("joinReq", name, myRoomID);
          $("#connect-status").append("<li>Join request sent</li>");
       }
    });
@@ -133,7 +133,7 @@ $(document).ready(function () {
      * Connection operations
      *
      */
-   socket.on("joinconfirm", function () {
+   socket.on("joinConfirm", function () {
       $("#connect-status").append("<li>Join request approved</li>");
 
       $("#connect-status").append("<li>Setting room title...</li>");
@@ -148,7 +148,7 @@ $(document).ready(function () {
       showChat();
    });
 
-   socket.on("joinfail", function (failure) {
+   socket.on("joinFail", function (failure) {
       $("#connect-status").append("<li><strong>Join request denied: " + failure + "</strong></li>");
    });
 
@@ -168,7 +168,7 @@ $(document).ready(function () {
             socket.emit("debug", msg.split('::')[1]);
          } else {
             encrypted = CryptoJS.Rabbit.encrypt(msg, password);
-            socket.emit("textsend", encrypted.toString());
+            socket.emit("textSend", encrypted.toString());
          }
       }
 
@@ -226,7 +226,7 @@ $(document).ready(function () {
    });
 
    //we're being rate limited...
-   socket.on("ratelimit", function (msg) {
+   socket.on("rateLimit", function (msg) {
       //post the message
       postChat("<li>" + getHTMLStamp() + "<span class='text-danger'>Please wait before doing that again.</span></li>");
    });
@@ -276,7 +276,7 @@ $(document).ready(function () {
      */
 
    //User joins the room
-   socket.on("newuser", function (newName) {
+   socket.on("newUser", function (newName) {
 
       //build the message
       postChat("<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(newName) + " joined the room.</span></li>");
@@ -286,13 +286,13 @@ $(document).ready(function () {
    });
 
    //User leaves the room
-   socket.on("goneuser", function (leftName) {
+   socket.on("goneUser", function (leftName) {
       postChat("<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(leftName) + " left the room.</span></li>");
       $("#user-" + leftName).remove();
    });
 
    //Recieving a list of users
-   socket.on("userlist", function (users) {
+   socket.on("userList", function (users) {
       $("[id^='user-']").remove();
       users.forEach(function (user) {
          $("#members").append("<li id=\"user-" + user.replace(/\W/g, '') + "\">" + _.escape(user) + " <span id=\"typing-" + user.replace(/\W/g, '') + "\" style=\"display: none;\" class=\"badge\">...</span></li>");
@@ -344,7 +344,7 @@ $(document).ready(function () {
                   $("#msgs").append(post);
                } else {
                   encrypted = CryptoJS.Rabbit.encrypt(image, password);
-                  socket.emit("datasend", encrypted.toString());
+                  socket.emit("dataSend", encrypted.toString());
 
                   var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Image sent. Distributing...</span></li>";
                   $("#msgs").append(post);

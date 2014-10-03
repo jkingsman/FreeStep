@@ -40,7 +40,7 @@ io.sockets.on("connection", function (socket) {
     var lastImageSend = 0;
 
     //emits newuser
-    socket.on("joinreq", function (name, pass) {
+    socket.on("joinReq", function (name, pass) {
         var roomID = sha1(pass);
         var allowJoin = 1;
         var denyReason = null;
@@ -70,25 +70,25 @@ io.sockets.on("connection", function (socket) {
             socket.roomIn = roomID;
 
             //send the join confirmation to the client, alert the room, and push a user list
-            socket.emit("joinconfirm");
+            socket.emit("joinConfirm");
 
             //add them to the user list since they're now a member
             clientsInRoomArray.push(socket.nickname);
-            io.sockets.in(roomID).emit("newuser", name);
-            socket.emit("userlist", clientsInRoomArray);
+            io.sockets.in(roomID).emit("newUser", name);
+            socket.emit("userList", clientsInRoomArray);
         } else {
-            socket.emit("joinfail", denyReason);
+            socket.emit("joinFail", denyReason);
         }
 
     });
 
     //emits goneuser
     socket.on('disconnect', function () {
-        io.sockets.in(socket.roomIn).emit("goneuser", socket.nickname);
+        io.sockets.in(socket.roomIn).emit("goneUser", socket.nickname);
     });
 
     //emits chat
-    socket.on("textsend", function (msg) {
+    socket.on("textSend", function (msg) {
         var type = 0;
         var name = socket.nickname;
         var data = [type, name, msg];
@@ -96,10 +96,10 @@ io.sockets.on("connection", function (socket) {
     });
 
     //emits data
-    socket.on("datasend", function (msg) {
+    socket.on("dataSend", function (msg) {
         var currTime = (new Date).getTime();
         if(currTime - lastImageSend < 5000) {
-            socket.emit("ratelimit");
+            socket.emit("rateLimit");
         } else {
             lastImageSend = currTime;
             var type = 1;
