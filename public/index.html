@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
   </head>
-  <body class="full-height">
-    <div class="alert alert-danger" style="display: none;" id="errors"></div>
+  <body class="full-height" id="main-body">
+    <div id="overlay"><h1 id="overlay-message"></h1></div>
     <div class="row">
       <div class="main col-md-4 col-md-offset-4">
         <div id="login-screen" style="margin: 8px;">
@@ -44,7 +44,7 @@
     <div class="row" id="main-chat-screen" style="display: none;">
       <div class="col-md-2">
         <h4 id="room-title">Room Members</h4>
-          <ul id="members" class="list-unstyled"></ul>
+        <ul id="members" class="list-unstyled"></ul>	  
         <hr />
       </div>
       <div class="col-md-10" id="conversation-container">
