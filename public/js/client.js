@@ -17,16 +17,10 @@ function decryptOrFail(data, password) {
    return decrypted;
 }
 
-function getHTMLStamp(align) {
-   align = typeof align !== 'undefined' ? align : 'left';
-
+function getHTMLStamp() {
    var date = new Date();
    var stamp = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-   if (align == 'left') {
-      return "<span class=\"timestamp\">" + stamp + " </span>";
-   } else {
-      return "<span class=\"timestamp pull-right\">" + stamp + " </span>";
-   }
+   return "<span class=\"timestamp\">" + stamp + " </span>";
 }
 
 function postChat(message) {
