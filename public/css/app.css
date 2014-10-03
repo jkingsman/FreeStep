@@ -10,7 +10,6 @@
   text-align: center;
   display: none;
 }
-
 .main {
   padding-top: 10px;
   text-align: center;
@@ -18,7 +17,6 @@
 .full-height {
   height: 100%;
 }
-
 #conversation {
   font-size: 18px;
   margin: 0px;
@@ -29,18 +27,11 @@
 .alert{
   z-index: 100000;
 }
-.final {
-  font-color: #000;
-}
-.interim {
-  font-color: #f00;
-}
 .chat-input {
   position: fixed;
   bottom: 0;
   background-color: white;
 }
-
 @media (min-width: 600px) {
   .chat-input {
     width: 80%;

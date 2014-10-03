@@ -19,13 +19,13 @@ function decryptOrFail(data, password) {
 
 function getHTMLStamp(align) {
    align = typeof align !== 'undefined' ? align : 'left';
-   
+
    var date = new Date();
    var stamp = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
    if (align == 'left') {
       return "<span class=\"text-muted timestamp\"><em>" + stamp + " </em></span>";
-   }else{
-      return "<span class=\"text-muted timestamp pull-right\"><em>" + stamp + " </em></span>";      
+   } else {
+      return "<span class=\"text-muted timestamp pull-right\"><em>" + stamp + " </em></span>";
    }
 }
 
@@ -34,12 +34,17 @@ function postChat(message) {
    if (configAudio) {
       notify.play();
    }
-   
+   if (!document.hasFocus()) {
+      console.log("blurred.");
+      missedNotifications++;
+   }
 }
 
 /*
 vars
 */
+//connection string
+var socket = io.connect("168.235.152.38:80");
 
 //vars for room data
 var myRoomID = password = name = null;
@@ -48,7 +53,7 @@ var myRoomID = password = name = null;
 var configFile = configAudio = true;
 
 //causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 1;
+var debug = 0;
 
 //mobile checking
 var isMobile = false;
@@ -63,8 +68,24 @@ var stopTimeout = undefined;
 //alert sound
 var notify = new Audio('notify.wav');
 
+//page blur handling
+var missedNotifications = 0;
+
+function notificationCheck() {
+   if (document.hasFocus()) {
+      missedNotifications = 0;
+   }
+
+   if (missedNotifications > 0) {
+      document.title = "(" + missedNotifications + " new) FreeChat | " + myRoomID;
+   } else {
+      document.title = "FreeChat | " + myRoomID;
+   }
+}
+
 $(document).ready(function () {
-   var socket = io.connect("168.235.152.38:80");
+   //start watching for missed notifications
+   setInterval(notificationCheck, 200);
 
    $("form").submit(function (event) {
       event.preventDefault();
@@ -109,26 +130,26 @@ $(document).ready(function () {
          $("#connect-status").append("<li>Join request sent</li>");
       }
    });
-   
-       /* 
+
+/* 
      *
      * Config options
      *
      */
-       
-       $('#config-timestamps').change(function() {
-              $('.timestamp').toggle();
-       });
-       
-      $('#config-files').change(function() {
-              configFile = $('#config-files').is(':checked');
-      });
-	      
-       $('#config-audio').change(function() {
-              configAudio = $('#config-audio').is(':checked');
-    });
 
-    /* 
+   $('#config-timestamps').change(function () {
+      $('.timestamp').toggle();
+   });
+
+   $('#config-files').change(function () {
+      configFile = $('#config-files').is(':checked');
+   });
+
+   $('#config-audio').change(function () {
+      configAudio = $('#config-audio').is(':checked');
+   });
+
+/* 
      *
      * Connection operations
      *
@@ -138,6 +159,7 @@ $(document).ready(function () {
 
       $("#connect-status").append("<li>Setting room title...</li>");
       $("#room-title").html(_.escape(myRoomID));
+      document.title = "FreeChat | " + myRoomID;
 
       $("#errors").hide();
 
@@ -189,31 +211,31 @@ $(document).ready(function () {
       var msgName = payload[1];
       var msg = decryptOrFail(payload[2], password);
       var msgCore = null;
-      
+
       if (name == msgName) {
-	 //this is our own post; color it
-	 var defaultColor = "text-success";
+         //this is our own post; color it
+         var defaultColor = "text-success";
       }
-      else{
-	 //it's not ours
-	 var defaultColor = "text-default";
+      else {
+         //it's not ours
+         var defaultColor = "text-default";
       }
-      
+
       //assemble message core
       if (type == 0) {
-	 msgCore = _.escape(msg);
+         msgCore = _.escape(msg);
       }
       else if (type == 1) {
-	 if(configFile){
-	    msgCore = "<img style=\"max-width: 30%\" src=\"" + msg + "\">";
-	 }
-	 else{
-	    msgCore = "<span class=\"text-danger\">Image blocked by configuration</span>";
-	 }
+         if (configFile) {
+            msgCore = "<img style=\"max-width: 30%\" src=\"" + msg + "\">";
+         }
+         else {
+            msgCore = "<span class=\"text-danger\">Image blocked by configuration</span>";
+         }
       }
 
       //post the message
-      postChat("<li>" + getHTMLStamp() + "<strong><span class=\"" + defaultColor+ "\">" + _.escape(msgName) + "</span></strong> " + msgCore + "</li>");
+      postChat("<li>" + getHTMLStamp() + "<strong><span class=\"" + defaultColor + "\">" + _.escape(msgName) + "</span></strong> " + msgCore + "</li>");
 
       //scroll to the bottom
       $(window).scrollTop($(window).scrollTop() + 5000)
@@ -305,6 +327,11 @@ $(document).ready(function () {
       $("#overlay").show();
       location.reload();
    });
+
+   $(window).focus(function () {
+      window_focus = true;
+   })
+
 
 /* 
      *
