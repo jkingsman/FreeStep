@@ -20,7 +20,7 @@ function decryptOrFail(data, password) {
 function getHTMLStamp() {
    var date = new Date();
    var stamp = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-   return "<span class=\"text-muted\"><em>" + stamp + " -- </em></span>";
+   return "<span class=\"text-muted\"><em>" + stamp + " </em></span>";
 }
 
 /*
@@ -164,9 +164,9 @@ $(document).ready(function () {
       //build whole message
       if (name == msgName) {
          //this is one of our posts
-         var post = "<li class=\"pull-right\">" + getHTMLStamp() + "<strong><span class=\"text-success\">" + _.escape(msgName) + "</span></strong>: " + msgCore + "</li><div class=\"clearfix\"></div>";
+         var post = "<li class=\"pull-right\">" + msgCore + " <strong><span class=\"text-success\">" + _.escape(msgName) + "</span></strong> " + getHTMLStamp() + "</li><div class=\"clearfix\"></div>";
       } else {
-         var post = "<li>" + getHTMLStamp() + "<strong><span>" + _.escape(msgName) + "</span></strong>: " + msgCore + "</li>";
+         var post = "<li>" + getHTMLStamp() + "<strong><span>" + _.escape(msgName) + "</span></strong> " + msgCore + "</li>";
       }
 
       $("#msgs").append(post);
