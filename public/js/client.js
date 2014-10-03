@@ -124,6 +124,8 @@ $(document).ready(function() {
       //if they're mobile, close the keyboard
       if (isMobile) {
 	 $("#msg").blur()
+      }else{
+	 $("#msg").focus()
       }
    });
   
