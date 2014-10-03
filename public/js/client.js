@@ -16,6 +16,7 @@ function getHTMLStamp() {
 /*
 vars
 */
+
 //vars for room data
 var myRoomID = null;
 var password = null;
@@ -33,7 +34,7 @@ var typing = false;
 var stopTimeout = undefined;
 
 $(document).ready(function() {
-  var socket = io.connect("drunkbroncos.com:80");
+  var socket = io.connect("168.235.152.38:80");
 
   $("form").submit(function(event) {
     event.preventDefault();

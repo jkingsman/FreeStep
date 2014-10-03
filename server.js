@@ -17,7 +17,7 @@ function findClientsSocketByRoomId(roomId) {
 
 app.configure(function() {
 	app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 80);
-	app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "drunkbroncos.com");
+	app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "168.235.152.38");
 	app.use(express.json());
 	app.use(express.urlencoded());
 	app.use(express.methodOverride());
