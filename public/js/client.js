@@ -22,7 +22,7 @@ var password = null;
 var name = null;
 
 //causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 1;
+var debug = 0;
 
 //mobile checking
 var isMobile = false;
@@ -43,13 +43,18 @@ $(document).ready(function() {
   $("#errors").hide();
   $("#name").focus();
   
-  //debug
+   //debug
    if(debug){
       name = Math.random().toString(36).substring(7);
       myRoomID = "TestRoom1";
       password = "test";
       
       socket.emit("joinreq", name, myRoomID);
+   }
+   
+   //check file upload support
+   if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+      ("#connect-status").append("<li>Warning: file uplaods not supported in this browser.</li>");
    }
 
   //enter screen
@@ -80,7 +85,7 @@ $(document).ready(function() {
       $("#connect-status").append("<li>Join request approved</li>");
       
       $("#connect-status").append("<li>Setting room title...</li>");
-      $("#room-title").text(myRoomID + " members:");
+      $("#room-title").html(_.escape(myRoomID) + " members:");
       
       $("#errors").hide();
       $("#msg").focus();
@@ -140,10 +145,10 @@ $(document).ready(function() {
      try{
        var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
        msg = decrypted.toString(CryptoJS.enc.Utf8);
-       var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + msgName + "</span></strong>: " + msg + "</li>";
+       var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: " + _.escape(msg) + "</li>";
      }
      catch(err){
-       var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + msgName + "</span></strong>: Cannot decrypt: " + msg + "</li>";
+       var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: Cannot decrypt: " + _.escape(msg) + "</li>";
      }
 
      //add the message
@@ -156,7 +161,7 @@ $(document).ready(function() {
    //get a status update
    socket.on("update", function(msg) {
      //build the message
-     var post = "<li>" + getHTMLStamp() + "<span class='text-danger'>" + msg + "</span></li>";
+     var post = "<li>" + getHTMLStamp() + "<span class='text-danger'>" + _.escape(msg) + "</span></li>";
      
      //add the message
      $("#msgs").append(post);
@@ -211,18 +216,18 @@ $(document).ready(function() {
   socket.on("newuser", function(newName) {
     
     //build the message
-    var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>" + newName + " joined the room.</span></li>";
+    var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(newName) + " joined the room.</span></li>";
     
     //add the message
     $("#msgs").append(post);
     
     //add user to the user list
-    $("#members").append("<li id=\"user-" + newName.replace(/\W/g, '') + "\">" + newName + "<span id=\"typing-" + newName.replace(/\W/g, '') + "\" style=\"display: none;\"> (typing)</span></li>");
+    $("#members").append("<li id=\"user-" + newName.replace(/\W/g, '') + "\">" + _.escape(newName) + "<span id=\"typing-" + newName.replace(/\W/g, '') + "\" style=\"display: none;\"> (typing)</span></li>");
   });
   
    //User leaves the room
    socket.on("goneuser", function(leftName) {
-     var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>" + leftName + " left the room.</span></li>";
+     var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>" + _.escape(leftName) + " left the room.</span></li>";
      
      $("#msgs").append(post);
      $("#user-" + leftName).remove();
@@ -232,27 +237,79 @@ $(document).ready(function() {
    socket.on("userlist", function(users) {
       $("[id^='user-']").remove();
       users.forEach(function(user) {
-	 $("#members").append("<li id=\"user-" + user.replace(/\W/g, '') + "\">" + user + "<span id=\"typing-" + user.replace(/\W/g, '') + "\" style=\"display: none;\"> (typing)</span></li>");
+	 $("#members").append("<li id=\"user-" + user.replace(/\W/g, '') + "\">" +_.escape(user) + "<span id=\"typing-" + user.replace(/\W/g, '') + "\" style=\"display: none;\"> (typing)</span></li>");
       });	
    });
 
-  //Current user is disconnected
-  socket.on("disconnect", function(){
-    $("body").append('<div id="overlay"></div>');
-  
-    $("#overlay")
-       .css({
-          'height' : '100%',
-          'opacity' : 0.4,
-          'position': 'absolute',
-          'top': 0,
-          'left': 0,
-          'background-color': 'black',
-          'width': '100%',
-          'z-index': 5000
-    });
-       
-    location.reload();
+   //Current user is disconnected
+   socket.on("disconnect", function(){
+      $("#overlay-message").text("Connection Lost"); 
+      $("#overlay").show();       
+      location.reload();
   });
+  
+   /* 
+   *
+   * File upload -- http://www.html5rocks.com/en/tutorials/file/dndfiles/
+   *
+   */
+   
+   function handleFileSelect(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      
+      var files = evt.dataTransfer.files; // FileList object.
+      
+      // files is a FileList of File objects. List some properties.
+      // Loop through the FileList and render image files as thumbnails.
+      for (var i = 0, f; f = files[i]; i++) {
+	 // only process image files.
+	 if (!f.type.match('image.*')) {
+	    var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Please upload images only.</span></li>";
+	    $("#msgs").append(post);
+	    continue;
+	 }
+	 
+	 var reader = new FileReader();
+	 
+	 // closure to capture the file information.
+	 reader.onload = (function(theFile) {
+	    return function(e) {
+	       //alert the user
+	       var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Processing & encrypting image... Please wait.</span></li>";
+	       $("#msgs").append(post);
+	       
+	       var image = e.target.result;
+	       
+	       //restrict to fiveish megs (not super accurate because base64, but eh)
+	       if (image.length > 5000000) {
+		  var post = "<li>" + getHTMLStamp() + "<span class='text-muted'>Image too large.</span></li>";
+		  $("#msgs").append(post);
+	       }
+	       else{
+		  encrypted = CryptoJS.Rabbit.encrypt(image, password);
+		  socket.emit("textsend", encrypted.toString());
+	       }
+	    };
+	 })(f);
+	 
+	 // read in the image file as a data URL.
+	 reader.readAsDataURL(f);
+      }
+   }
+   
+   
+   function handleDragOver(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+   }
+   
+   // setup the  listeners.
+   var dropZone = document.getElementById('main-body');
+   dropZone.addEventListener('dragover', handleDragOver, false);
+   dropZone.addEventListener('drop', handleFileSelect, false);
+
+   
 
 });
