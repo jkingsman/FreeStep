@@ -6,6 +6,16 @@ function showChat() {
     $("#main-chat-screen").show();
 }
 
+function decryptOrFail(data, password) {
+   try {
+      var encoded = CryptoJS.Rabbit.decrypt(data, password);
+      var decrypted = encoded.toString(CryptoJS.enc.Utf8);
+   } catch(err) {
+      var decrypted = "Unable to decrypt: " + data;
+   }
+   
+   return decrypted;
+}
 
 function getHTMLStamp() {
     var date = new Date();
@@ -23,7 +33,7 @@ var password = null;
 var name = null;
 
 //causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 0;
+var debug = 1;
 
 //mobile checking
 var isMobile = false;
@@ -50,7 +60,7 @@ $(document).ready(function () {
     if(debug) {
         name = Math.random().toString(36).substring(7);
         myRoomID = "TestRoom1";
-        password = "test";
+        password = "testpwd";
 
         socket.emit("joinreq", name, myRoomID);
     }
@@ -134,17 +144,8 @@ $(document).ready(function () {
     socket.on("chat", function (payload) {
         var type = payload[0];
         var msgName = payload[1];
-        var msg = payload[2];
+        var msg = decryptOrFail(payload[2], password);
         var msgCore = null;
-
-        //decrypt the message
-        try {
-            var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
-            msg = decrypted.toString(CryptoJS.enc.Utf8);
-        } catch(err) {
-            var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: Cannot decrypt: " + _.escape(msg) + "</li>";
-        }
-
 
         //build message core
         if(type == 0) {
@@ -164,37 +165,6 @@ $(document).ready(function () {
         $("#msgs").append(post);
 
         //scroll to the bottom
-        $(window).scrollTop($(window).scrollTop() + 5000)
-    });
-
-    //get a data message
-    socket.on("datachat", function (payload) {
-        var msgName = payload[0];
-        var msg = payload[1];
-        var userColor, floatSide = '';
-
-        //color green for the user, blue for others
-        if(name == msgName) {
-            userColor = 'text-success';
-            floatSide = "style=\"float: right;\"";
-        } else {
-            userColor = 'text-primary';
-        }
-
-
-        //build the message
-        try {
-            var decrypted = CryptoJS.Rabbit.decrypt(msg, password);
-            msg = decrypted.toString(CryptoJS.enc.Utf8);
-            var post = "<li " + floatSide + ">" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: <img style=\"max-width:40%\" src=\"" + msg + "\"></li>";
-        } catch(err) {
-            var post = "<li>" + getHTMLStamp() + "<strong><span class='" + userColor + "'>" + _.escape(msgName) + "</span></strong>: Cannot decrypt image file.</li>";
-        }
-
-        //add the message
-        $("#msgs").append(post);
-
-        //scroll to the top
         $(window).scrollTop($(window).scrollTop() + 5000)
     });
 
