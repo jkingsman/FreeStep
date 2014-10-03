@@ -1,6 +1,16 @@
 #login-screen, #main-chat-screen {
   padding-top: 10px;
 }
+#overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(128, 128, 128, 0.61);
+  z-index: 10000;
+  text-align: center;
+  display: none;
+}
+
 .main {
   padding-top: 10px;
   text-align: center;
@@ -8,6 +18,7 @@
 .full-height {
   height: 100%;
 }
+
 #conversation {
   font-size: 18px;
   margin: 0px;
