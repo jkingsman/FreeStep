@@ -2,7 +2,8 @@
 <html lang="en" class="full-height" style="width: 97%; padding: 10px;">
   <head>
     <title>FreeStep</title>
-    <link rel="stylesheet" type="text/css" href="components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="components/jasny-bootstrap/dist/css/jasny-bootstrap.min.css">
     <link rel="stylesheet" href="components/font-awesome/css/font-awesome.css">
     <link rel="stylesheet" href="css/app.css">
     <meta charset="UTF-8">
@@ -78,52 +79,12 @@
       </div>
     </div>
   
-    <div class="row" id="main-chat-screen" style="display: none;">
-      <div class="col-md-2">
-	<div class="panel panel-default">
-	  <div class="panel-heading">
-	    <h3 class="panel-title" id="room-title"></h3>
-	  </div>
-	  <div class="panel-body">
-	    <h4>Room Members</h4>
-	    <ul id="members" class="list-unstyled"></ul>
-	  </div>
-	</div>
-	<div class="panel panel-default">
-	  <div class="panel-heading">
-	    <h3 class="panel-title" id="room-title">Configuration</h3>
-	  </div>
-	  <div class="panel-body">
-	    <label>
-	      <input type="checkbox" id="config-timestamps" checked="checked"> Enable timestamps
-	    </label>
-	    <label>
-	      <input type="checkbox" id="config-files" checked="checked"> Enable file reciept
-	    </label>
-	    <label>
-	      <input type="checkbox" id="config-audio" checked="checked"> Enable audio alert
-	    </label>
-	  </div>
-	</div>
-      </div>
-      <div class="col-md-10" id="conversation-container">
-        <div id="conversation">
-          <ul id="msgs" class="list-unstyled"></ul>
-        </div>
-        <form id="chatForm" class="chat-input">
-          <div class="input-group">
-              <input type="text" class="form-control" id="msg" placeholder="Message">
-              <span class="input-group-btn">
-                  <input type="submit" class="btn btn-success" value="Submit">
-              </span>
-          </div>
-        </form>
-      </div>
-    </div>
+
     <script src="components/crypto-js/rollups/rabbit.js"></script>
     <script src="components/underscore/underscore-min.js"></script>
-    <script src="components/jquery/dist/jquery.js"></script>
-    <script src="components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="components/jquery/dist/jquery.min.js"></script>
+    <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="components/jasny-bootstrap/dist/js/jasny-bootstrap.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>  
     <script src="js/client.js"></script>
   </body>

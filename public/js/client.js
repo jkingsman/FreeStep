@@ -35,7 +35,6 @@ function postChat(message) {
       notify.play();
    }
    if (!document.hasFocus()) {
-      console.log("blurred.");
       missedNotifications++;
    }
 }
@@ -53,7 +52,7 @@ var myRoomID = password = name = null;
 var configFile = configAudio = true;
 
 //causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 0;
+var debug = 1;
 
 //mobile checking
 var isMobile = false;
@@ -86,6 +85,8 @@ function notificationCheck() {
 $(document).ready(function () {
    //start watching for missed notifications
    setInterval(notificationCheck, 200);
+   
+   myRoomID = "Home";
 
    $("form").submit(function (event) {
       event.preventDefault();
