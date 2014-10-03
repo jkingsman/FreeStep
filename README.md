@@ -46,3 +46,8 @@ Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), who
 * Install the app (`sudo npm install`)
 * Run the app (`sudo npm start`) (`sudo` required due to the low port number)
 * Access in your browser at `http://168.235.152.38` (or whatever your host is)
+
+For development, I highly recommend `supervisor` (`npm install supervisor`) - it watches files for changes and restarts your server when they occur. When combined with the `debug` variable in `client.js`, this is powerful way to have the app restarted and be dropped into a room whenever you change a file. My customary command for development was:
+```
+sudo supervisor --watch .,public --extensions node,js,css,html server.js
+```
