@@ -20,7 +20,7 @@ function decryptOrFail(data, password) {
 function getHTMLStamp() {
    var date = new Date();
    var stamp = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-   return "<span class=\"text-muted\"><em>" + stamp + " </em></span>";
+   return "<span class=\"text-muted timestamp\"><em>" + stamp + " </em></span>";
 }
 
 /*
@@ -73,7 +73,7 @@ $(document).ready(function () {
       ("#connect-status").append("<li>Warning: file uplaods not supported in this browser.</li>");
    }
 
-   //enter screen
+   //room join hook
    $("#nameForm").submit(function () {
       name = $("#name").val();
       myRoomID = $("#room").val();
@@ -91,8 +91,18 @@ $(document).ready(function () {
          $("#connect-status").append("<li>Join request sent</li>");
       }
    });
+   
+       /* 
+     *
+     * Config options
+     *
+     */
+       
+       $('#config-timestamps').change(function() {
+              $('.timestamp').toggle();
+    });
 
-/* 
+    /* 
      *
      * Connection operations
      *
