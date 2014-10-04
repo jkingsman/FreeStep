@@ -207,12 +207,8 @@ $(document).ready(function () {
       var msg = $("#msg").val();
       var encrypted = null;
       if (msg !== "") {
-         if (msg.indexOf("debug::") > -1) {
-            socket.emit("debug", msg.split('::')[1]);
-         } else {
-            encrypted = CryptoJS.Rabbit.encrypt(msg, password);
-            socket.emit("textSend", encrypted.toString());
-         }
+	 encrypted = CryptoJS.Rabbit.encrypt(msg, password);
+	 socket.emit("textSend", encrypted.toString());
       }
 
       //clear the message bar after send
