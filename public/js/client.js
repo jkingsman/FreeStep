@@ -114,7 +114,7 @@ $(window).focus(function () {
  *  
 */
 //connection string
-var socket = io.connect("168.235.152.38:80");
+var socket = io.connect("psychologger.com:3000");
 
 //vars for room data
 var myRoomID = password = name = null;

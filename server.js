@@ -2,7 +2,10 @@ var express = require('express'),
    app = express(),
    server = require('http').createServer(app),
    io = require("socket.io").listen(server),
-   sha1 = require('sha1');
+   sha1 = require('sha1'),
+   sqlite3 = require('sqlite3').verbose();
+   
+var db = new sqlite3.Database(':memory:');
 
 //lets us get room memebers in socket.io >=1.0
 function findClientsSocketByRoomId(roomId) {
@@ -17,8 +20,8 @@ function findClientsSocketByRoomId(roomId) {
 }
 
 app.configure(function () {
-   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 80);
-   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "168.235.152.38");
+   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
+   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "psychologger.com");
    app.use(express.json());
    app.use(express.urlencoded());
    app.use(express.methodOverride());
