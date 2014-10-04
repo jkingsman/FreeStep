@@ -51,13 +51,13 @@ io.sockets.on("connection", function (socket) {
       var clientsInRoom = findClientsSocketByRoomId(roomID);
       var clientsInRoomArray = [];
       var clientsInRoomArrayScrubbed = [];
-      for(var i = 0; i < clientsInRoom.length; i++) {
-         clientsInRoomArray.push(clientsInRoom[i].nickname);
+      clientsInRoom.forEach(function (client){
+         clientsInRoomArray.push(client.nickname);
          /* the scrubbed one has the sanitized version as used in the username
           * classes for typing, so we can check and avoid collisions.
           */
-         clientsInRoomArrayScrubbed.push(clientsInRoom[i].nickname.replace(/\W/g, ''));
-      }
+         clientsInRoomArrayScrubbed.push(client.nickname.replace(/\W/g, ''));
+      });
 
       //check if the nickname exists
       if(clientsInRoomArrayScrubbed.indexOf(name.replace(/\W/g, '')) != -1) {
