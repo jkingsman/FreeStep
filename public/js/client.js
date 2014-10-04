@@ -451,8 +451,8 @@ $(document).ready(function () {
 
                var image = e.target.result;
 
-               //restrict to fiveish megs (not super accurate because base64, but eh)
-               if (image.length > 5000000) {
+               //restrict to oneish megs (not super accurate because base64, but eh)
+               if (image.length > 1000000) {
                   postChat("<div class=\"status-message\">Image too large.</li>");
                } else {
                   encrypted = CryptoJS.Rabbit.encrypt(image, password);
