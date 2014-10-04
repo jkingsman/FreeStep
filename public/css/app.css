@@ -26,6 +26,11 @@ body {
   padding-bottom: 15px;
 }
 
+#chatForm {
+  /* Freaking firefox... */
+  width: -moz-available;
+}
+
 /*
  *
  * General Formatting
