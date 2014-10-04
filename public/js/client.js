@@ -107,9 +107,9 @@ function notificationCheck() {
    }
 
    if (missedNotifications > 0) {
-      document.title = "(" + missedNotifications + " new) FreeChat | " + myRoomID;
+      document.title = "(" + missedNotifications + " new) FreeStep | " + myRoomID;
    } else {
-      document.title = "FreeChat | " + myRoomID;
+      document.title = "FreeStep | " + myRoomID;
    }
 }
 
@@ -204,7 +204,7 @@ $(document).ready(function () {
       $("#connect-status").append("<li>Join request approved!</li>");
       $("#connect-status").append("<li>Setting room title...</li>");
       $(".room-title").html(sanitizeToHTMLSafe(myRoomID));
-      document.title = "FreeChat | " + myRoomID;
+      document.title = "FreeStep | " + myRoomID;
 
       $("#errors").hide();
 
