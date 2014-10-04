@@ -28,8 +28,6 @@ app.configure(function () {
    app.use(express.compress());
    app.use(express.static(__dirname + '/public'));
    app.use('/components', express.static(__dirname + '/components'));
-   app.use('/js', express.static(__dirname + '/js'));
-   app.use('/icons', express.static(__dirname + '/icons'));
 });
 
 app.get('/', function (req, res) {
