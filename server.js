@@ -45,7 +45,7 @@ io.sockets.on("connection", function (socket) {
 
    //emits newuser
    socket.on("joinReq", function (name, pass) {
-      var roomID = sha1(pass);
+      var roomID = pass;
       var allowJoin = 1;
       var denyReason = null;
 
