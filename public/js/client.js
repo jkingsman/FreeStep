@@ -184,8 +184,7 @@ $(document).ready(function () {
      *
      */
    socket.on("joinConfirm", function () {
-      $("#connect-status").append("<li>Join request approved</li>");
-
+      $("#connect-status").append("<li>Join request approved!</li>");
       $("#connect-status").append("<li>Setting room title...</li>");
       $(".room-title").html(sanitizeToHTMLSafe(myRoomID));
       document.title = "FreeChat | " + myRoomID;
@@ -194,6 +193,10 @@ $(document).ready(function () {
 
       if (!isMobile) {
          $("#msg").focus()
+      }else{
+	 $("#name").blur();
+	 $("#room").blur();
+	 $("#pass").blur();
       }
 
       showChat();
@@ -224,9 +227,7 @@ $(document).ready(function () {
 
       //if they're mobile, close the keyboard
       if (isMobile) {
-         $("#msg").blur()
-      } else {
-         $("#msg").focus()
+         $("#msg").blur();
       }
    });
 
