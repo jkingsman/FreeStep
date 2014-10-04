@@ -1,5 +1,8 @@
 /*
-Functions
+ * 
+ * Functions
+ *
+ * 
 */
 function showChat() {
    $("#login-screen").hide();
@@ -77,8 +80,20 @@ function notificationCheck() {
    }
 }
 
+function typingTimeout() {
+   typing = false;
+   socket.emit("typing", false);
+}
+
+$(window).focus(function () {
+   window_focus = true;
+})
+
 /*
-vars
+ * 
+ * Variable defs
+ *
+ *  
 */
 //connection string
 var socket = io.connect("168.235.152.38:80");
@@ -97,6 +112,27 @@ else{
    var debug = 0;
 }
 
+/* 
+ *
+ * Config options
+ *
+ */
+
+ $('#config-timestamps').change(function () {
+    $('.message-timestamp').toggle();
+ });
+
+ $('#config-files').change(function () {
+    configFile = $('#config-files').is(':checked');
+ });
+
+ $('#config-audio').change(function () {
+    configAudio = $('#config-audio').is(':checked');
+ });
+ 
+ $('#config-imglink').change(function () {
+    $('.img-download-link').toggle();
+ });
 
 //mobile checking
 var isMobile = false;
@@ -118,12 +154,15 @@ $(document).ready(function () {
    //start watching for missed notifications
    setInterval(notificationCheck, 200);
    
+   //default RoomID gets put in the page title; make is sane for page load
    myRoomID = "Home";
 
+   //all forms are handled, never actually submitted
    $("form").submit(function (event) {
       event.preventDefault();
    });
 
+   //prep for login display - hide the main screen, hide errors, and focus on the name box when appropriate
    $("#main-chat-screen").hide();
    $("#errors").hide();
    if (!isMobile) {
@@ -133,8 +172,7 @@ $(document).ready(function () {
       $("#name").blur();
    }
 
-
-   //debug
+   //debug autologin
    if (debug) {
       name = Math.random().toString(36).substring(7);
       myRoomID = "TestRoom1";
@@ -147,9 +185,16 @@ $(document).ready(function () {
    if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
       ("#connect-status").append("<li>Warning: file uplaods not supported in this browser.</li>");
    }
+   //check mobile, and, if mobile, expose the image link config option and file chooser for upload, and hide the drag/drop message
+   if (isMobile) {
+      $('#config-imglink-container').removeClass("hidden");
+      $('#file-select').removeClass("hidden");
+      $('#file-drag-message').addClass("hidden");
+   }
 
-   //room join hook
+   //form submit hook - they want to join
    $("#nameForm").submit(function () {
+      //load up the form
       name = $("#name").val();
       myRoomID = $("#room").val();
       password = $("#pass").val();
@@ -166,34 +211,6 @@ $(document).ready(function () {
          $("#connect-status").append("<li>Join request sent</li>");
       }
    });
-
-/* 
-     *
-     * Config options
-     *
-     */
-
-   $('#config-timestamps').change(function () {
-      $('.message-timestamp').toggle();
-   });
-
-   $('#config-files').change(function () {
-      configFile = $('#config-files').is(':checked');
-   });
-
-   $('#config-audio').change(function () {
-      configAudio = $('#config-audio').is(':checked');
-   });
-   
-   $('#config-imglink').change(function () {
-      $('.img-download-link').toggle();
-   });
-   
-   if (isMobile) {
-      $('#config-imglink-container').removeClass("hidden");
-      $('#file-select').removeClass("hidden");
-      $('#file-drag-message').addClass("hidden");
-   }
    
 
 /* 
@@ -202,13 +219,23 @@ $(document).ready(function () {
      *
      */
    socket.on("joinConfirm", function () {
+      //we've recieved request approval
       $("#connect-status").append("<li>Join request approved!</li>");
       $("#connect-status").append("<li>Setting room title...</li>");
+      
+      //set the room title classes to sanitized room name
       $(".room-title").html(sanitizeToHTMLSafe(myRoomID));
+      
+      //seet page title
       document.title = "FreeStep | " + myRoomID;
 
+      //hide errors in case we had any
       $("#errors").hide();
 
+      /* Focus the message box, unless you're mobile, it which case blur
+       * everything that might have focus so your keyboard collapses and
+       * you can see the full room layout and options, especially the menu.
+       */ 
       if (!isMobile) {
          $("#msg").focus()
       }else{
@@ -217,15 +244,17 @@ $(document).ready(function () {
 	 $("#pass").blur();
       }
 
+      //finally, expose the main room
       showChat();
    });
 
+   //oops. They done goofed.
    socket.on("joinFail", function (failure) {
       $("#connect-status").append("<li><strong>Join request denied: " + failure + "</strong></li>");
    });
 
 
-/* 
+    /* 
      *
      * Chat operations
      *
@@ -233,9 +262,12 @@ $(document).ready(function () {
 
    //send a message
    $("#chatForm").submit(function () {
+      //load vars
       var msg = $("#msg").val();
       var encrypted = null;
+      
       if (msg !== "") {
+	 //if we have something to send, crypt and send it.
 	 encrypted = CryptoJS.Rabbit.encrypt(msg, password);
 	 socket.emit("textSend", encrypted.toString());
       }
@@ -251,26 +283,30 @@ $(document).ready(function () {
 
    //get a chat message
    socket.on("chat", function (payload) {
+      //type = 0 for text, 1 for image
       var type = payload[0];
       var msgName = payload[1];
       var msg = decryptOrFail(payload[2], password);
-      var msgCore = null;
+      
+      //msg core is used later in message construction
+      var msgCore, msgOwner = null;
 
-      if (name == msgName) {
-         //this is our own post; color it
-         var defaultColor = "text-success";
-      }
-      else {
-         //it's not ours
-         var defaultColor = "text-default";
-      }
-
-      //assemble message core
+      /*
+       * Message Core Assembly
+       * Some parts of the message are always the same
+       * (layout, alignment, etc) - so we build a core,
+       * which contains (most of the) unique parts,
+       * so actually sending it is relatively simple.
+       */
+      
       if (type == 0) {
+	 //it's text - sanitize the decrypted text and we're done
          msgCore = sanitizeToHTMLSafe(msg);
       }
       else if (type == 1) {
+	 //it's an image
          if (configFile) {
+	    //they're okay with getting images
             msgCore = "<img src=\"" + msg + "\"><span class=\"img-download-link\" style=\"display: none;\"><br /><a target=\"_blank\" href=\"" + msg + "\">View/Download Image</a>";
          }
          else {
@@ -281,35 +317,36 @@ $(document).ready(function () {
       //post the message
       if (name == msgName) {
 	 //this is our message; format accordingly
-         postChat("<div class=\"message my-message\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</span><span class=\"message-body\"> " + msgCore + "</span></div>");
+	 msgOwner = "my-message";
       }
       else {
-         postChat("<div class=\"message their-message\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</strong></span><span class=\"message-body\"> " + msgCore + "</span></div>");
-      } 
+	 msgOwner = "their-message";
+      }
+      
+      //package it and post it!
+      postChat("<div class=\"message " + msgOwner + "\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</strong></span><span class=\"message-body\"> " + msgCore + "</span></div>");
    });
 
    //get a status update
    socket.on("update", function (msg) {
-      //post the message
+      //post the sanitized message
       postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(msg) + "</div>");
    });
 
-   //we're being rate limited...
    socket.on("rateLimit", function (msg) {
-      //post the message
       postChat("<div class=\"status-message text-warning\">Please wait before doing that again.</div>");
    });
 
 /* 
      *
      * Typing operations
+     * These are kind of tricky. Essentially, if the user types,
+     * emit that the user is typing, and alert the server that
+     * they've stopped (the alert to be sent 250ms from now). If
+     * they keep typing, don't send any more alerts that they're
+     * typing, and keep pushing back the "stopped" emission.
      *
      */
-
-   function typingTimeout() {
-      typing = false;
-      socket.emit("typing", false);
-   }
 
    $("#msg").keypress(function (e) {
       if (e.which !== 13) {
@@ -326,8 +363,9 @@ $(document).ready(function () {
       }
    });
 
-   //Recieving a typing status update
+   //Recieving a typing status update; update css
    socket.on("typing", function (typing) {
+      //typing[0] is boolean to indicate typing (true) or not (false)
       if (typing[0]) {
          $("#typing-" + convertToAlphanum(typing[1])).removeClass("hidden");
       } else {
@@ -344,7 +382,7 @@ $(document).ready(function () {
    //User joins the room
    socket.on("newUser", function (newName) {
 
-      //build the message
+      //post the message
       postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(newName) + " joined the room.</li>");
 
       //add user to the user list
@@ -353,38 +391,41 @@ $(document).ready(function () {
 
    //User leaves the room
    socket.on("goneUser", function (leftName) {
+      //post the message
       postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(leftName) + " left the room.</div>");
+      
+      //strike user from userlist
       $("#user-" + leftName).remove();
    });
 
    //Recieving a list of users
    socket.on("userList", function (users) {
+      //clear the user list
       $("[id^='user-']").remove();
+      
+      //for each user we got, add them to the list
       users.forEach(function (user) {
          $("#members").append("<li id=\"user-" + convertToAlphanum(user) + "\">" + sanitizeToHTMLSafe(user) + " <span id=\"typing-" + convertToAlphanum(user) + "\" class=\"badge hidden pull-right\">...</span></li>");
       });
    });
 
-   //Current user is disconnected
+   //reload when we get disconnected
    socket.on("disconnect", function () {
       location.reload();
    });
 
-   $(window).focus(function () {
-      window_focus = true;
-   })
 
-
-/* 
+    /* 
      *
      * File upload -- http://www.html5rocks.com/en/tutorials/file/dndfiles/
-     *
+     * handleFileDrop is a pretty standard upload script. More can be learned above.
      */
 
    function handleFileDrop(evt) {
       evt.stopPropagation();
       evt.preventDefault();
 
+      //determine whether this is a drag/drop or a file selector input
       if (typeof evt.target.files == 'undefined'){
 	 var files = evt.dataTransfer.files; // FileList object.
       }
@@ -396,32 +437,28 @@ $(document).ready(function () {
       for (var i = 0, f; f = files[i]; i++) {
          // only process image files.
          if (!f.type.match('image.*')) {
-            var post = "<div class=\"status-message\">Please upload images only.</div>";
-            $("#msgs").append(post);
+            postChat("<div class=\"status-message\">Please upload images only.</div>");
             continue;
          }
 
          var reader = new FileReader();
 
-         // closure to capture the file information.
+         // closure to capture the file information, encrypt, and send..
          reader.onload = (function (theFile) {
             return function (e) {
                //alert the user
-               var post = "<div class=\"status-message\">Processing & encrypting image... Please wait.</div>";
-               $("#msgs").append(post);
+               postChat("<div class=\"status-message\">Processing & encrypting image... Please wait.</div>");
 
                var image = e.target.result;
 
                //restrict to fiveish megs (not super accurate because base64, but eh)
                if (image.length > 5000000) {
-                  var post = "<div class=\"status-message\">Image too large.</li>";
-                  $("#msgs").append(post);
+                  postChat("<div class=\"status-message\">Image too large.</li>");
                } else {
                   encrypted = CryptoJS.Rabbit.encrypt(image, password);
                   socket.emit("dataSend", encrypted.toString());
 
-                  var post = "<div class=\"status-message\">Image sent. Distributing...</li>";
-                  $("#msgs").append(post);
+                  postChat("<div class=\"status-message\">Image sent. Distributing...</li>");
                }
             };
          })(f);
