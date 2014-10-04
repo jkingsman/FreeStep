@@ -10,16 +10,6 @@ body {
   padding-top: 10px;
 }
 
-#overlay {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(128, 128, 128, 0.61);
-  z-index: 10000;
-  text-align: center;
-  display: none;
-}
-
 #conversation {
   font-size: 18px;
   margin: 0px;
@@ -80,6 +70,9 @@ body {
   color:#828282;
 }
 
+.message-metadata {
+  font-size: 11px;
+}
 
 /*
  * Per-person customization
@@ -87,7 +80,12 @@ body {
 
 .my-message,.my-message .message-metadata {
   float:right;
-  padding-right: 5px;
+  padding: 0 5px 15px 5px
+}
+
+.their-message,.their-message .message-metadata {
+  float: left;
+  padding: 0 5px 15px 5px
 }
 
 .my-message .message-body {
@@ -97,6 +95,14 @@ body {
 .their-message .message-body {
   float:left;
   background:#c8ffc8;
+}
+
+.my-message .message-metadata .messsage-name, .my-message .message-metadata .message-timestamp {
+  float: left;
+}
+
+.their-message .message-metadata .message-name, .their-message .message-metadata .message-timestamp {
+  float: right;
 }
 
 

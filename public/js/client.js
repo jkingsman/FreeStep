@@ -22,7 +22,7 @@ function decryptOrFail(data, password) {
 function getHTMLStamp() {
    var date = new Date();
    var stamp = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-   return "<span class=\"timestamp\">" + stamp + " </span>";
+   return "<span class=\"message-timestamp\">" + stamp + " </span>";
 }
 
 //add the text to the chat window, and handle notifications
@@ -259,10 +259,10 @@ $(document).ready(function () {
       //post the message
       if (name == msgName) {
 	 //this is our message; format accordingly
-         postChat("<div class=\"message my-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\"> " + sanitizeToHTMLSafe(msgName) + " " + getHTMLStamp() + "</span></div>");
+         postChat("<div class=\"message my-message\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</span><span class=\"message-body\"> " + msgCore + "</span></div>");
       }
       else {
-         postChat("<div class=\"message their-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\">" + getHTMLStamp() + " " + sanitizeToHTMLSafe(msgName) + "</strong></span></div>");
+         postChat("<div class=\"message their-message\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</strong></span><span class=\"message-body\"> " + msgCore + "</span></div>");
       } 
    });
 
@@ -294,24 +294,22 @@ $(document).ready(function () {
 	 if (!typing) {
 	    socket.emit("typing", true);
 	    typing = true;
-	    stopTimeout = setTimeout(typingTimeout, 250);
-	 }else{
 	    clearTimeout(stopTimeout);
 	    stopTimeout = setTimeout(typingTimeout, 250);
 	 }
-      } else {
-         //it was enter; they're done
-         clearTimeout(stopTimeout);
-         typingTimeout();
+	 else{
+	    clearTimeout(stopTimeout);
+	    stopTimeout = setTimeout(typingTimeout, 250);
+	 }
       }
    });
 
    //Recieving a typing status update
    socket.on("typing", function (typing) {
       if (typing[0]) {
-         $("#typing-" + convertToAlphanum(typing[1])).addClass("hidden");
-      } else {
          $("#typing-" + convertToAlphanum(typing[1])).removeClass("hidden");
+      } else {
+         $("#typing-" + convertToAlphanum(typing[1])).addClass("hidden");
       }
    });
 
