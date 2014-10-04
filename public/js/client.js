@@ -6,6 +6,7 @@ function showChat() {
    $("#main-chat-screen").show();
 }
 
+//attempt to decrypt the given data with the given password, or return a failure string
 function decryptOrFail(data, password) {
    try {
       var encoded = CryptoJS.Rabbit.decrypt(data, password);
@@ -17,12 +18,14 @@ function decryptOrFail(data, password) {
    return decrypted;
 }
 
+//return a timestamp
 function getHTMLStamp() {
    var date = new Date();
    var stamp = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
    return "<span class=\"timestamp\">" + stamp + " </span>";
 }
 
+//add the text to the chat window, and handle notifications
 function postChat(message) {
    $("#msgs").append(message);
    $("#msgs").append("<div class=\"clearfix\"></div>");
@@ -34,6 +37,16 @@ function postChat(message) {
    if (!document.hasFocus()) {
       missedNotifications++;
    }
+}
+
+//sanitize from non-alphanumberic characters
+function convertToAlphanum(string) {
+   return string.replace(/\W/g, '');
+}
+
+//sanitize from non-HTML safe characters
+function sanitizeToHTMLSafe(string) {
+   return _.escape(string);
 }
 
 /*
@@ -49,7 +62,7 @@ var myRoomID = password = name = null;
 var configFile = configAudio = true;
 
 //causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 0;
+var debug = 1;
 
 //mobile checking
 var isMobile = false;
@@ -156,7 +169,7 @@ $(document).ready(function () {
       $("#connect-status").append("<li>Join request approved</li>");
 
       $("#connect-status").append("<li>Setting room title...</li>");
-      $(".room-title").html(_.escape(myRoomID));
+      $(".room-title").html(sanitizeToHTMLSafe(myRoomID));
       document.title = "FreeChat | " + myRoomID;
 
       $("#errors").hide();
@@ -221,7 +234,7 @@ $(document).ready(function () {
 
       //assemble message core
       if (type == 0) {
-         msgCore = _.escape(msg);
+         msgCore = sanitizeToHTMLSafe(msg);
       }
       else if (type == 1) {
          if (configFile) {
@@ -235,17 +248,17 @@ $(document).ready(function () {
       //post the message
       if (name == msgName) {
 	 //this is our message; format accordingly
-         postChat("<div class=\"message my-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\"> " + _.escape(msgName) + " " + getHTMLStamp() + "</span></div>");
+         postChat("<div class=\"message my-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\"> " + sanitizeToHTMLSafe(msgName) + " " + getHTMLStamp() + "</span></div>");
       }
       else {
-         postChat("<div class=\"message their-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\">" + getHTMLStamp() + "<strong>" + _.escape(msgName) + "</strong></span></div>");
+         postChat("<div class=\"message their-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\">" + getHTMLStamp() + "<strong>" + sanitizeToHTMLSafe(msgName) + "</strong></span></div>");
       } 
    });
 
    //get a status update
    socket.on("update", function (msg) {
       //post the message
-      postChat("<div class=\"status-message\">" + _.escape(msg) + "</div>");
+      postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(msg) + "</div>");
    });
 
    //we're being rate limited...
@@ -267,13 +280,13 @@ $(document).ready(function () {
 
    $("#msg").keypress(function (e) {
       if (e.which !== 13) {
-         if (typing === false && $("#msg").is(":focus")) {
-            typing = true;
-            socket.emit("typing", true);
-         } else {
-            clearTimeout(stopTimeout);
-            stopTimeout = setTimeout(typingTimeout, 250);
-         }
+	 if (!typing) {
+	    socket.emit("typing", true);
+	    typing = true
+	 }else{
+	    clearTimeout(stopTimeout);
+	    stopTimeout = setTimeout(typingTimeout, 250);
+	 }
       } else {
          //it was enter; they're done
          clearTimeout(stopTimeout);
@@ -284,9 +297,9 @@ $(document).ready(function () {
    //Recieving a typing status update
    socket.on("typing", function (typing) {
       if (typing[0]) {
-         $("#typing-" + typing[1].replace(/\W/g, '')).show();
+         $("#typing-" + convertToAlphanum(typing[1])).toggleClass("hidden");
       } else {
-         $("#typing-" + typing[1].replace(/\W/g, '')).hide();
+         $("#typing-" + convertToAlphanum(typing[1])).toggleClass("hidden");
       }
    });
 
@@ -302,15 +315,15 @@ $(document).ready(function () {
    socket.on("newUser", function (newName) {
 
       //build the message
-      postChat("<div class=\"status-message\">" + _.escape(newName) + " joined the room.</li>");
+      postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(newName) + " joined the room.</li>");
 
       //add user to the user list
-      $("#members").append("<li id=\"user-" + newName.replace(/\W/g, '') + "\">" + _.escape(newName) + " <span id=\"typing-" + newName.replace(/\W/g, '') + "\" style=\"display: none;\" class=\"badge\">...</span></li>");
+      $("#members").append("<li id=\"user-" + convertToAlphanum(newName) + "\">" + sanitizeToHTMLSafe(newName) + " <span id=\"typing-" + convertToAlphanum(newName) + "\" class=\"badge hidden pull-right\">...</span></li>");
    });
 
    //User leaves the room
    socket.on("goneUser", function (leftName) {
-      postChat("<div class=\"status-message\">" + _.escape(leftName) + " left the room.</div>");
+      postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(leftName) + " left the room.</div>");
       $("#user-" + leftName).remove();
    });
 
@@ -318,14 +331,12 @@ $(document).ready(function () {
    socket.on("userList", function (users) {
       $("[id^='user-']").remove();
       users.forEach(function (user) {
-         $("#members").append("<li id=\"user-" + user.replace(/\W/g, '') + "\">" + _.escape(user) + " <span id=\"typing-" + user.replace(/\W/g, '') + "\" style=\"display: none;\" class=\"badge\">...</span></li>");
+         $("#members").append("<li id=\"user-" + convertToAlphanum(user) + "\">" + sanitizeToHTMLSafe(user) + " <span id=\"typing-" + convertToAlphanum(user) + "\" class=\"badge hidden pull-right\">...</span></li>");
       });
    });
 
    //Current user is disconnected
    socket.on("disconnect", function () {
-      $("#overlay-message").text("Connection Lost");
-      $("#overlay").show();
       location.reload();
    });
 

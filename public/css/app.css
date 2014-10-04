@@ -43,6 +43,11 @@ body {
   text-align: center;
 }
 
+.short-scroll {
+  height: 200px;
+  overflow: auto;
+}
+
 /*
  *
  * Custom message classes

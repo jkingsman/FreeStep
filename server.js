@@ -112,5 +112,6 @@ io.sockets.on("connection", function (socket) {
     //emits typing
     socket.on("typing", function (typing) {
         io.sockets.in(socket.roomIn).emit("typing", [typing, socket.nickname]);
+	console.log([typing, socket.nickname]);
     });
 });
