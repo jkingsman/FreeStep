@@ -45,7 +45,7 @@ Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), who
 
 ### Install and run the app
 
-* Install the app (`sudo npm install`)
+* Install the app (`npm install`)
 * Run the app (`sudo npm start`) (`sudo` required due to the low port number)
 * Access in your browser at your host's address (or whatever your host is)
 
