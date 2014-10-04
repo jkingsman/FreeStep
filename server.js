@@ -99,7 +99,7 @@ io.sockets.on("connection", function (socket) {
 
    //emits data
    socket.on("dataSend", function (msg) {
-      var currTime = (new Date).getTime();
+      var currTime = Date.now();
       if(currTime - lastImageSend < 5000) {
          socket.emit("rateLimit");
       } else {
