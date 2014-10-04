@@ -9,6 +9,25 @@ function showChat() {
    $("#main-chat-screen").show();
 }
 
+function sendJoinReq(tryName, tryRoomID, tryPassword){
+   //load up the globals with our given data
+   name = tryName;
+   myRoomID = tryRoomID;
+   password = tryPassword;
+
+   if (tryName === "" || tryName.length < 2 || tryRoomID === "" || tryRoomID.length < 2) {
+      //we have a problem
+      $("#errors").empty();
+      $("#errors").append("Please enter a nickname and room longer than 2 characters.");
+      $("#errors").show();
+   } else {
+      //good to go, request to join
+      $("#connect-status").append("<li>Sending join request</li>");
+      socket.emit("joinReq", name, myRoomID);
+      $("#connect-status").append("<li>Join request sent</li>");
+   }
+}
+
 //attempt to decrypt the given data with the given password, or return a failure string
 function decryptOrFail(data, password) {
    try {
@@ -17,7 +36,6 @@ function decryptOrFail(data, password) {
    } catch (err) {
       var decrypted = "Unable to decrypt: " + data;
    }
-
    return decrypted;
 }
 
@@ -104,14 +122,6 @@ var myRoomID = password = name = null;
 //config vars
 var configFile = configAudio = true;
 
-//causes nickname to be random hex and room/password to be 'test', and log you in on load whenever the URL contains the string "debug"
-if (document.URL.indexOf("debug") > -1) {
-   var debug = 1;
-}
-else{
-   var debug = 0;
-}
-
 /* 
  *
  * Config options
@@ -172,18 +182,9 @@ $(document).ready(function () {
       $("#name").blur();
    }
 
-   //debug autologin
-   if (debug) {
-      name = Math.random().toString(36).substring(7);
-      myRoomID = "TestRoom1";
-      password = "testpwd";
-
-      socket.emit("joinReq", name, myRoomID);
-   }
-
    //check file upload support
    if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
-      ("#connect-status").append("<li>Warning: file uplaods not supported in this browser.</li>");
+      ("#connect-status").append("<li>Warning: file uploads not supported in this browser.</li>");
    }
    //check mobile, and, if mobile, expose the image link config option and file chooser for upload, and hide the drag/drop message
    if (isMobile) {
@@ -199,17 +200,7 @@ $(document).ready(function () {
       myRoomID = $("#room").val();
       password = $("#pass").val();
 
-      if (name === "" || name.length < 2 || myRoomID === "" || myRoomID.length < 2) {
-         //we have a problem
-         $("#errors").empty();
-         $("#errors").append("Please enter a nickname and room longer than 2 characters.");
-         $("#errors").show();
-      } else {
-         //good to go, request to join
-         $("#connect-status").append("<li>Sending join request</li>");
-         socket.emit("joinReq", name, myRoomID);
-         $("#connect-status").append("<li>Join request sent</li>");
-      }
+      sendJoinReq($("#name").val(), $("#room").val(), $("#pass").val());
    });
    
 
