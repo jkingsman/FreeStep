@@ -29,7 +29,7 @@ function getHTMLStamp() {
 function postChat(message) {
    $("#msgs").append(message);
    $("#msgs").append("<div class=\"clearfix\"></div>");
-   $(window).scrollTop($(window).scrollTop() + 5000)
+   $(window).scrollTop($(window).scrollTop() + 5000);
    
    if (configAudio) {
       notify.play();
@@ -169,6 +169,11 @@ $(document).ready(function () {
    $('#config-imglink').change(function () {
       $('.img-download-link').toggle();
    });
+   
+   if (isMobile) {
+      $('#config-imglink-container').removeClass("hidden");
+   }
+   
 
 /* 
      *
