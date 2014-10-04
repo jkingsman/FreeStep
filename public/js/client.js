@@ -64,6 +64,19 @@ function sanitizeToHTMLSafe(string) {
    return _.escape(string);
 }
 
+// chats and updates while the window is blurred
+function notificationCheck() {
+   if (document.hasFocus()) {
+      missedNotifications = 0;
+   }
+
+   if (missedNotifications > 0) {
+      document.title = "(" + missedNotifications + " new) FreeStep | " + myRoomID;
+   } else {
+      document.title = "FreeStep | " + myRoomID;
+   }
+}
+
 /*
 vars
 */
@@ -100,18 +113,6 @@ var notify = new Audio('notify.wav');
 
 //page blur handling
 var missedNotifications = 0;
-
-function notificationCheck() {
-   if (document.hasFocus()) {
-      missedNotifications = 0;
-   }
-
-   if (missedNotifications > 0) {
-      document.title = "(" + missedNotifications + " new) FreeStep | " + myRoomID;
-   } else {
-      document.title = "FreeStep | " + myRoomID;
-   }
-}
 
 $(document).ready(function () {
    //start watching for missed notifications
