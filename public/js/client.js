@@ -39,6 +39,21 @@ function postChat(message) {
    }
 }
 
+function clearFileInput(){ 
+    var oldInput = document.getElementById("file-select"); 
+     
+    var newInput = document.createElement("input"); 
+     
+    newInput.type = "file"; 
+    newInput.id = oldInput.id; 
+    newInput.name = oldInput.name; 
+    newInput.className = oldInput.className; 
+    newInput.style.cssText = oldInput.style.cssText; 
+    // copy any other relevant attributes 
+     
+    oldInput.parentNode.replaceChild(newInput, oldInput); 
+}
+
 //sanitize from non-alphanumberic characters
 function convertToAlphanum(string) {
    return string.replace(/\W/g, '');
@@ -175,6 +190,8 @@ $(document).ready(function () {
    
    if (isMobile) {
       $('#config-imglink-container').removeClass("hidden");
+      $('#file-select').removeClass("hidden");
+      $('#file-drag-message').addClass("hidden");
    }
    
 
@@ -363,11 +380,16 @@ $(document).ready(function () {
      *
      */
 
-   function handleFileSelect(evt) {
+   function handleFileDrop(evt) {
       evt.stopPropagation();
       evt.preventDefault();
 
-      var files = evt.dataTransfer.files; // FileList object.
+      if (typeof evt.target.files == 'undefined'){
+	 var files = evt.dataTransfer.files; // FileList object.
+      }
+      else{
+	 var files = evt.target.files;
+      }
       // files is a FileList of File objects. List some properties.
       // Loop through the FileList and render image files as thumbnails.
       for (var i = 0, f; f = files[i]; i++) {
@@ -405,6 +427,7 @@ $(document).ready(function () {
 
          // read in the image file as a data URL.
          reader.readAsDataURL(f);
+	 clearFileInput();
       }
    }
 
@@ -417,6 +440,8 @@ $(document).ready(function () {
 
    // setup the  listeners.
    var dropZone = document.getElementById('main-body');
+   var fileSelect = document.getElementById('file-select');
    dropZone.addEventListener('dragover', handleDragOver, false);
-   dropZone.addEventListener('drop', handleFileSelect, false);
+   dropZone.addEventListener('drop', handleFileDrop, false);
+   fileSelect.addEventListener('change', handleFileDrop, false);
 });
