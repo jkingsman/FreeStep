@@ -2,7 +2,6 @@ var express = require('express'),
    app = express(),
    server = require('http').createServer(app),
    io = require("socket.io").listen(server),
-   sha1 = require('sha1'),
    sqlite3 = require('sqlite3').verbose();
    
 var db = new sqlite3.Database(':memory:');
