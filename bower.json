@@ -1,6 +1,6 @@
 {
-  "name": "chat-20",
-  "version": "0.0.1",
+  "name": "freestep",
+  "version": "1.0.0",
   "dependencies": {
     "bootstrap": "latest",
     "jquery": "latest",
@@ -11,13 +11,13 @@
     "jasny-bootstrap": "latest"
   },
   "directory": "components",
-  "homepage": "https://github.com/tamaspiros/advanced-chat",
+  "homepage": "https://github.com/jkingsman/FreeStep.git",
   "authors": [
-    "Tamas Piros <me@tamas.io>"
+    "Jack Kingsman <jack.kingsman@gmail.com>"
   ],
   "main": "server.js",
   "moduleType": [
     "node"
   ],
-  "license": "free"
+  "license": "MIT"
 }
