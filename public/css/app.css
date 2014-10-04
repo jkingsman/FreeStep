@@ -18,6 +18,14 @@ body {
   padding-bottom: 40px;
 }
 
+#login-screen {
+  margin: 10px;
+}
+
+#msgs {
+  padding-bottom: 15px;
+}
+
 /*
  *
  * General Formatting
@@ -49,8 +57,8 @@ body {
  */
 
 .message {
-  max-width:50%;
   display:inline-block;
+  overflow: hidden;
 }
 
 .message img {
@@ -80,12 +88,12 @@ body {
 
 .my-message,.my-message .message-metadata {
   float:right;
-  padding: 0 5px 15px 5px
+  padding: 0 5px 5px 5px
 }
 
 .their-message,.their-message .message-metadata {
   float: left;
-  padding: 0 5px 15px 5px
+  padding: 0 5px 5px 5px
 }
 
 .my-message .message-body {

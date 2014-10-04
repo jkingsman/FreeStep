@@ -113,6 +113,9 @@ $(document).ready(function () {
    if (!isMobile) {
       $("#name").focus();
    }
+   else{
+      $("#name").blur();
+   }
 
 
    //debug
@@ -155,7 +158,7 @@ $(document).ready(function () {
      */
 
    $('#config-timestamps').change(function () {
-      $('.timestamp').toggle();
+      $('.message-timestamp').toggle();
    });
 
    $('#config-files').change(function () {
