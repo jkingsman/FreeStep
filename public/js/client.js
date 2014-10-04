@@ -61,8 +61,14 @@ var myRoomID = password = name = null;
 //config vars
 var configFile = configAudio = true;
 
-//causes nickname to be random hex and room/password to be 'test', and log you in on load
-var debug = 1;
+//causes nickname to be random hex and room/password to be 'test', and log you in on load whenever the URL contains the string "debug"
+if (document.URL.indexOf("debug") > -1) {
+   var debug = 1;
+}
+else{
+   var debug = 0;
+}
+
 
 //mobile checking
 var isMobile = false;
@@ -159,6 +165,10 @@ $(document).ready(function () {
    $('#config-audio').change(function () {
       configAudio = $('#config-audio').is(':checked');
    });
+   
+   $('#config-imglink').change(function () {
+      $('.img-download-link').toggle();
+   });
 
 /* 
      *
@@ -238,7 +248,7 @@ $(document).ready(function () {
       }
       else if (type == 1) {
          if (configFile) {
-            msgCore = "<img src=\"" + msg + "\">";
+            msgCore = "<img src=\"" + msg + "\"><span class=\"img-download-link\" style=\"display: none;\"><br /><a target=\"_blank\" href=\"" + msg + "\">View/Download Image</a>";
          }
          else {
             msgCore = "<span class=\"text-danger\">Image blocked by configuration</span>";
@@ -251,7 +261,7 @@ $(document).ready(function () {
          postChat("<div class=\"message my-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\"> " + sanitizeToHTMLSafe(msgName) + " " + getHTMLStamp() + "</span></div>");
       }
       else {
-         postChat("<div class=\"message their-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\">" + getHTMLStamp() + "<strong>" + sanitizeToHTMLSafe(msgName) + "</strong></span></div>");
+         postChat("<div class=\"message their-message\"><span class=\"message-body\"> " + msgCore + "</span><br /><span class=\"message-metadata\">" + getHTMLStamp() + " " + sanitizeToHTMLSafe(msgName) + "</strong></span></div>");
       } 
    });
 
@@ -282,7 +292,8 @@ $(document).ready(function () {
       if (e.which !== 13) {
 	 if (!typing) {
 	    socket.emit("typing", true);
-	    typing = true
+	    typing = true;
+	    stopTimeout = setTimeout(typingTimeout, 250);
 	 }else{
 	    clearTimeout(stopTimeout);
 	    stopTimeout = setTimeout(typingTimeout, 250);
@@ -297,13 +308,11 @@ $(document).ready(function () {
    //Recieving a typing status update
    socket.on("typing", function (typing) {
       if (typing[0]) {
-         $("#typing-" + convertToAlphanum(typing[1])).toggleClass("hidden");
+         $("#typing-" + convertToAlphanum(typing[1])).addClass("hidden");
       } else {
-         $("#typing-" + convertToAlphanum(typing[1])).toggleClass("hidden");
+         $("#typing-" + convertToAlphanum(typing[1])).removeClass("hidden");
       }
    });
-
-
 
 /* 
      *

@@ -80,12 +80,14 @@ body {
   color:#828282;
 }
 
+
 /*
  * Per-person customization
  */ 
 
 .my-message,.my-message .message-metadata {
   float:right;
+  padding-right: 5px;
 }
 
 .my-message .message-body {
