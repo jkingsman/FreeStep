@@ -1,148 +1,157 @@
 <!DOCTYPE html>
 <html lang="en" style="width: 97%;">
-  <head>
-    <title>FreeStep</title>
-    <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="components/jasny-bootstrap/dist/css/jasny-bootstrap.min.css">
-    <link rel="stylesheet" href="components/font-awesome/css/font-awesome.css">
-    <link rel="stylesheet" href="css/app.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="apple-touch-icon" href="img/icon.png"/>
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png" />
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-60x60.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-120x120.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-76x76.png" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-152x152.png" />
-    <!-- Windows 8 Tile Icons -->
-    <meta name="msapplication-square70x70logo" content="smalltile.png" />
-    <meta name="msapplication-square150x150logo" content="mediumtile.png" />
-    <meta name="msapplication-wide310x150logo" content="widetile.png" />
-    <meta name="msapplication-square310x310logo" content="largetile.png" />
-  </head>
-  <body id="main-body">
-    <div id="login-screen">
+
+<head>
+   <title>FreeStep</title>
+   <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css">
+   <link rel="stylesheet" href="components/jasny-bootstrap/dist/css/jasny-bootstrap.min.css">
+   <link rel="stylesheet" href="components/font-awesome/css/font-awesome.css">
+   <link rel="stylesheet" href="css/app.css">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+   <link rel="apple-touch-icon" href="img/icon.png" />
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+   <!-- Apple Touch Icons -->
+   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+   <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png" />
+   <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-60x60.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-120x120.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-76x76.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-152x152.png" />
+   <!-- Windows 8 Tile Icons -->
+   <meta name="msapplication-square70x70logo" content="smalltile.png" />
+   <meta name="msapplication-square150x150logo" content="mediumtile.png" />
+   <meta name="msapplication-wide310x150logo" content="widetile.png" />
+   <meta name="msapplication-square310x310logo" content="largetile.png" />
+</head>
+
+<body id="main-body">
+   <div id="login-screen">
       <div class="row">
-	<div class="main col-md-4 col-md-offset-4">
-          <h1><i class="glyphicon glyphicon-retweet"></i> FreeStep</h1>
-          <p class="lead">Open source, private chat goodness. <br />Built with node.js/socket.io/Bootstrap.</p>
+         <div class="main col-md-4 col-md-offset-4">
+            <h1><i class="glyphicon glyphicon-retweet"></i> FreeStep</h1>
+            <p class="lead">Open source, private chat goodness.
+               <br />Built with node.js/socket.io/Bootstrap.</p>
             <form class="form" id="nameForm">
-              <div class="form-group">
-                
-                <div class="input-group">
-                  <span class="input-group-addon">@</span>
-                  <input type="text" class="form-control input-lg" placeholder="nickname" id="name"><br /> 
-                </div>
-                
-                <div class="input-group">
-                  <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
-                  <input type="text" class="form-control input-lg" placeholder="room name" id="room"><br /><br />
-                </div>
-		
-		<div class="input-group">
-                  <span class="input-group-addon"><i class="glyphicon glyphicon-asterisk"></i></span>
-                  <input type="password" class="form-control input-lg" placeholder="password" id="pass"><br /><br />
-                </div>
-                <input type="submit" name="join" id="join" style="width: 100%;" value="Join" class="btn btn-primary btn-lg">                
-              </div>
+               <div class="form-group">
+
+                  <div class="input-group">
+                     <span class="input-group-addon">@</span>
+                     <input type="text" class="form-control input-lg" placeholder="nickname" id="name">
+                     <br />
+                  </div>
+
+                  <div class="input-group">
+                     <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+                     <input type="text" class="form-control input-lg" placeholder="room name" id="room">
+                     <br />
+                     <br />
+                  </div>
+
+                  <div class="input-group">
+                     <span class="input-group-addon"><i class="glyphicon glyphicon-asterisk"></i></span>
+                     <input type="password" class="form-control input-lg" placeholder="password" id="pass">
+                     <br />
+                     <br />
+                  </div>
+                  <input type="submit" name="join" id="join" style="width: 100%;" value="Join" class="btn btn-primary btn-lg">
+               </div>
             </form>
-	    <ul id="connect-status" class="list-unstyled"></ul>
-	</div>
+            <ul id="connect-status" class="list-unstyled"></ul>
+         </div>
       </div>
       <div class="row">
-	<div class="col-lg-12">
-	  <h1 class="text-center">Why FreeStep?</h1>
-	</div>
-	<div class="col-lg-3">
-	  <!-- empty  so it collapses easier; offsets get weird. -->
-	</div>
-	<div class="col-lg-2">
-	  <h2 class="text-center"><i class="glyphicon glyphicon-ok"></i> Simple</h2>
-	  <p class="text-center">With an elegantly minimal interface and drag and drop file uploads, Freestep does what you need without clutter or advertisements.</p>
-	</div>
-	<div class="col-lg-2">
-	  <h2 class="text-center"><i class="glyphicon glyphicon-lock"></i> Secure</h2>
-	  <p class="text-center">Using the state of the art <a href="http://en.wikipedia.org/wiki/Rabbit_(cipher)">Rabbit stream cipher</a>, FreeStep keeps your chats and images private - even from the server.</p>
-	</div>
-	<div class="col-lg-2">
-	  <h2 class="text-center"><i class="glyphicon glyphicon-eye-open"></i> Transparent</h2>
-	  <p class="text-center">FreeStep is entirely open source on <a href="https://github.com/jkingsman/FreeStep">GitHub</a>, available for code review or customization under the MIT license. FreeStep never advertises, logs, or tracks - ever.</p>
-	</div>
-	<div class="col-lg-3">
-	  <!-- empty  so it collapses easier; offsets get weird. -->
-	</div>
+         <div class="col-lg-12">
+            <h1 class="text-center">Why FreeStep?</h1>
+         </div>
+         <div class="col-lg-3">
+            <!-- empty  so it collapses easier; offsets get weird. -->
+         </div>
+         <div class="col-lg-2">
+            <h2 class="text-center"><i class="glyphicon glyphicon-ok"></i> Simple</h2>
+            <p class="text-center">With an elegantly minimal interface and drag and drop file uploads, Freestep does what you need without clutter or advertisements.</p>
+         </div>
+         <div class="col-lg-2">
+            <h2 class="text-center"><i class="glyphicon glyphicon-lock"></i> Secure</h2>
+            <p class="text-center">Using the state of the art <a href="http://en.wikipedia.org/wiki/Rabbit_(cipher)">Rabbit stream cipher</a>, FreeStep keeps your chats and images private - even from the server.</p>
+         </div>
+         <div class="col-lg-2">
+            <h2 class="text-center"><i class="glyphicon glyphicon-eye-open"></i> Transparent</h2>
+            <p class="text-center">FreeStep is entirely open source on <a href="https://github.com/jkingsman/FreeStep">GitHub</a>, available for code review or customization under the MIT license. FreeStep never advertises, logs, or tracks - ever.</p>
+         </div>
+         <div class="col-lg-3">
+            <!-- empty  so it collapses easier; offsets get weird. -->
+         </div>
       </div>
-    </div>
-  <div id="main-chat-screen" style="display: none;">
-  <div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm padded">
-      <h1 class="visible-md visible-lg text-center" style="color: #777; "><i class="glyphicon glyphicon-retweet"></i> <a href="/">FreeStep</a></h1>
-      <h3 class="text-center" style="margin-top: 5px; /* Fix for mobile menu */">Room: <span class="room-title">Room Name</span></h3>
-      <div class="panel panel-default">
-	  <div class="panel-heading">
-	    <h3 class="panel-title">Members</h3>
-	  </div>
-	  <div class="panel-body short-scroll">
-	    <ul id="members" class="list-unstyled"></ul>
-	  </div>
-	</div>
-	<div class="panel panel-default">
-	  <div class="panel-heading">
-	    <h3 class="panel-title" id="room-title">Configuration</h3>
-	  </div>
-	  <div class="panel-body">
-	    <label>
-	      <input type="checkbox" id="config-timestamps" checked="checked"> Show timestamps
-	    </label>
-	    <label>
-	      <input type="checkbox" id="config-files" checked="checked"> Recieve images
-	    </label>
-	    <label>
-	      <input type="checkbox" id="config-audio" checked="checked"> Play new message alert
-	    </label>
-	    <label id="config-imglink-container" class="hidden">
-	      <input type="checkbox" id="config-imglink"> Display image download links
-	    </label>
-	  </div>
-	</div>
-	<span id="file-drag-message">Drag and drop to send images.</span>
-	<input type="file" id="file-select" name="files" class="hidden"/>
-    </div>
+   </div>
+   <div id="main-chat-screen" style="display: none;">
+      <div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm padded">
+         <h1 class="visible-md visible-lg text-center" style="color: #777; "><i class="glyphicon glyphicon-retweet"></i> <a href="/">FreeStep</a></h1>
+         <h3 class="text-center" style="margin-top: 5px; /* Fix for mobile menu */">Room: <span class="room-title">Room Name</span></h3>
+         <div class="panel panel-default">
+            <div class="panel-heading">
+               <h3 class="panel-title">Members</h3>
+            </div>
+            <div class="panel-body short-scroll">
+               <ul id="members" class="list-unstyled"></ul>
+            </div>
+         </div>
+         <div class="panel panel-default">
+            <div class="panel-heading">
+               <h3 class="panel-title" id="room-title">Configuration</h3>
+            </div>
+            <div class="panel-body">
+               <label>
+                  <input type="checkbox" id="config-timestamps" checked="checked"> Show timestamps
+               </label>
+               <label>
+                  <input type="checkbox" id="config-files" checked="checked"> Recieve images
+               </label>
+               <label>
+                  <input type="checkbox" id="config-audio" checked="checked"> Play new message alert
+               </label>
+               <label id="config-imglink-container" class="hidden">
+                  <input type="checkbox" id="config-imglink"> Display image download links
+               </label>
+            </div>
+         </div>
+         <span id="file-drag-message">Drag and drop to send images.</span>
+         <input type="file" id="file-select" name="files" class="hidden" />
+      </div>
 
-    <div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
-      <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">Room: <span class="room-title">Room Name</span></span>
-    </div>
+      <div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
+         <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+         </button>
+         <span class="navbar-brand">Room: <span class="room-title">Room Name</span></span>
+      </div>
 
-    <div id="conversation">
-      <div id="msgs"></div>
-    </div>
-    <form id="chatForm" class="chat-input">
-    <div class="input-group" style="padding-left: 10px;">
-	<input type="text" class="form-control" id="msg" placeholder="Message">
-	<span class="input-group-btn">
+      <div id="conversation">
+         <div id="msgs"></div>
+      </div>
+      <form id="chatForm" class="chat-input">
+         <div class="input-group" style="padding-left: 10px;">
+            <input type="text" class="form-control" id="msg" placeholder="Message">
+            <span class="input-group-btn">
 	    <input type="submit" class="btn btn-success" value="Submit">
 	</span>
-    </div>
-    </form>
-  </div>
-    <script src="components/crypto-js/rollups/rabbit.js"></script>
-    <script src="components/underscore/underscore-min.js"></script>
-    <script src="components/jquery/dist/jquery.min.js"></script>
-    <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="components/jasny-bootstrap/dist/js/jasny-bootstrap.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>  
-    <script src="js/client.js"></script>
-  </body>
+         </div>
+      </form>
+   </div>
+   <script src="components/crypto-js/rollups/rabbit.js"></script>
+   <script src="components/underscore/underscore-min.js"></script>
+   <script src="components/jquery/dist/jquery.min.js"></script>
+   <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
+   <script src="components/jasny-bootstrap/dist/js/jasny-bootstrap.min.js"></script>
+   <script src="/socket.io/socket.io.js"></script>
+   <script src="js/client.js"></script>
+</body>
+
 </html>
