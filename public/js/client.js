@@ -114,7 +114,7 @@ $(window).focus(function () {
  *  
 */
 //connection string
-var socket = io.connect("freestep.net:443");
+var socket = io.connect("freestep.net:80");
 
 //vars for room data
 var myRoomID = password = name = null;
