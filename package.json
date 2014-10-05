@@ -8,8 +8,7 @@
     "nodemon": "~1.0.13",
     "socket.io": "1.1.0",
     "shrinkwrap": "~0.0.3",
-    "bower": "~1.2.8",
-    "sqlite3": "~3.0.2"
+    "bower": "~1.2.8"
   },
   "devDependencies": {},
   "scripts": {
