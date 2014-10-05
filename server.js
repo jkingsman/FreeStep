@@ -38,8 +38,9 @@ io.sockets.on("connection", function (socket) {
    var lastImageSend = 0;
 
    //emits newuser
-   socket.on("joinReq", function (name, pass) {
-      var roomID = pass;
+   socket.on("joinReq", function (name, room, password) {
+      var roomID = room + password;
+      var roomPassword = password;
       var allowJoin = 1;
       var denyReason = null;
 

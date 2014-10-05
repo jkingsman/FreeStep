@@ -23,8 +23,7 @@ function sendJoinReq(tryName, tryRoomID, tryPassword){
    } else {
       //good to go, request to join
       $("#connect-status").append("<li>Sending join request</li>");
-      socket.emit("joinReq", name, CryptoJS.SHA1(myRoomID).toString);
-      $("#connect-status").append("<li>Join request sent</li>");
+      socket.emit("joinReq", name, CryptoJS.SHA1(myRoomID).toString(), CryptoJS.SHA1(tryPassword).toString());
    }
 }
 
