@@ -11,17 +11,18 @@ function showChat() {
 
 function sendJoinReq(tryName, tryRoomID, tryPassword){
    //load up the globals with our given data
-   name = tryName;
-   myRoomID = tryRoomID;
-   password = tryPassword;
-
    if (tryName === "" || tryName.length < 2 || tryRoomID === "" || tryRoomID.length < 2) {
       //we have a problem
-      $("#errors").empty();
-      $("#errors").append("Please enter a nickname and room longer than 2 characters.");
-      $("#errors").show();
+      $("#connect-status").append("<li>Please enter a nickname and room longer than 2 characters.</li>");
+ 
    } else {
       //good to go, request to join
+      //load our globals with our validated data
+      name = tryName;
+      myRoomID = tryRoomID;
+      password = tryPassword;
+      
+      //make it so
       $("#connect-status").append("<li>Sending join request</li>");
       socket.emit("joinReq", name, CryptoJS.SHA1(myRoomID).toString(), CryptoJS.SHA1(tryPassword).toString());
    }
@@ -171,9 +172,8 @@ $(document).ready(function () {
       event.preventDefault();
    });
 
-   //prep for login display - hide the main screen, hide errors, and focus on the name box when appropriate
+   //prep for login display - hide the main screen and focus on the name box when appropriate
    $("#main-chat-screen").hide();
-   $("#errors").hide();
    if (!isMobile) {
       $("#name").focus();
    }
@@ -218,9 +218,6 @@ $(document).ready(function () {
       
       //seet page title
       document.title = "FreeStep | " + myRoomID;
-
-      //hide errors in case we had any
-      $("#errors").hide();
 
       /* Focus the message box, unless you're mobile, it which case blur
        * everything that might have focus so your keyboard collapses and
