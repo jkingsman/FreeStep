@@ -1,10 +1,7 @@
 var express = require('express'),
    app = express(),
    server = require('http').createServer(app),
-   io = require("socket.io").listen(server),
-   sqlite3 = require('sqlite3').verbose();
-   
-var db = new sqlite3.Database(':memory:');
+   io = require("socket.io").listen(server);
 
 //lets us get room memebers in socket.io >=1.0
 function findClientsSocketByRoomId(roomId) {
