@@ -1,7 +1,31 @@
 var express = require('express'),
-   app = express(),
-   server = require('http').createServer(app),
-   io = require("socket.io").listen(server);
+   https = require("https"),
+   fs = require('fs');
+
+var privateKey = fs.readFileSync('ssl/server.key').toString();
+var certificate = fs.readFileSync('ssl/freestep_net.crt').toString();
+var ca = fs.readFileSync('ssl/COMODO.ca-bundle').toString();
+
+var sslOptions = {
+    key: fs.readFileSync('ssl/server.key'),
+    cert: fs.readFileSync('ssl/freestep_net.crt'),
+    ca: fs.readFileSync('ssl/COMODO.ca-bundle')
+};
+
+var app = express();
+var server = https.createServer(sslOptions, app);
+var io = require("socket.io").listen(server);
+
+app.configure(function () {
+   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 443);
+   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "freestep.net");
+   app.use(express.json());
+   app.use(express.urlencoded());
+   app.use(express.methodOverride());
+   app.use(express.compress());
+   app.use(express.static(__dirname + '/public'));
+   app.use('/components', express.static(__dirname + '/components'));
+});
 
 //lets us get room memebers in socket.io >=1.0
 function findClientsSocketByRoomId(roomId) {
@@ -14,17 +38,6 @@ function findClientsSocketByRoomId(roomId) {
    }
    return res;
 }
-
-app.configure(function () {
-   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
-   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "psychologger.com");
-   app.use(express.json());
-   app.use(express.urlencoded());
-   app.use(express.methodOverride());
-   app.use(express.compress());
-   app.use(express.static(__dirname + '/public'));
-   app.use('/components', express.static(__dirname + '/components'));
-});
 
 app.get('/', function (req, res) {
    res.render('index.html');
