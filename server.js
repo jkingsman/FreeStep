@@ -1,6 +1,27 @@
 var express = require('express'),
    https = require("https"),
    fs = require('fs');
+   
+/***
+ *
+ * This is for HTTP redirecting to HTTPS - if you're running this as HTTP, delete below until the closing comment block
+ *
+ ***/ 
+var http = express.createServer();
+
+// set up a route to redirect http to https
+http.get('*',function(req,res){  
+    res.redirect('https://freestep.net')
+})
+
+// have it listen on 80
+http.listen(80);
+
+/***
+ *
+ * This is for HTTP redirecting to HTTPS - if you're running this as HTTP, delete above until the opening comment block
+ *
+ ***/ 
 
 var privateKey = fs.readFileSync('ssl/server.key').toString();
 var certificate = fs.readFileSync('ssl/freestep_net.crt').toString();
