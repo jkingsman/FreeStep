@@ -52,9 +52,19 @@ function postChat(message) {
    $("#msgs").append("<div class=\"clearfix\"></div>");
    $(window).scrollTop($(window).scrollTop() + 5000);
    
-   if (configAudio) {
+   //handle the options for the window being in and out of focus  
+   if (configAudioUnfocus && !document.hasFocus()) {
+      console.log("playing because" + configAudioUnfocus + !document.hasFocus());
       notify.play();
    }
+   
+   //handle the options for the window being in and out of focus  
+   if (configAudioFocus && document.hasFocus()) {
+      console.log("playing because" + configAudioUnfocus + document.hasFocus());
+      notify.play();
+   }
+   
+   //add to our missed notifications if appropriate
    if (!document.hasFocus()) {
       missedNotifications++;
    }
@@ -103,10 +113,6 @@ function typingTimeout() {
    socket.emit("typing", false);
 }
 
-$(window).focus(function () {
-   window_focus = true;
-})
-
 /*
  * 
  * Variable defs
@@ -120,7 +126,7 @@ var socket = io.connect("freestep.net:443");
 var myRoomID = password = name = null;
 
 //config vars
-var configFile = configAudio = true;
+var configFile = configAudioFocus = configAudioUnfocus = true;
 
 /* 
  *
@@ -128,21 +134,25 @@ var configFile = configAudio = true;
  *
  */
 
- $('#config-timestamps').change(function () {
-    $('.message-timestamp').toggle();
- });
+$('#config-timestamps').change(function () {
+   $('.message-timestamp').toggle();
+});
 
- $('#config-files').change(function () {
-    configFile = $('#config-files').is(':checked');
- });
+$('#config-files').change(function () {
+   configFile = $('#config-files').is(':checked');
+});
 
- $('#config-audio').change(function () {
-    configAudio = $('#config-audio').is(':checked');
- });
+$('#config-audio-focus').change(function () {
+   configAudioFocus = $('#config-audio-focus').is(':checked');
+});
  
- $('#config-imglink').change(function () {
-    $('.img-download-link').toggle();
- });
+$('#config-audio-unfocus').change(function () {
+   configAudioUnfocus = $('#config-audio-unfocus').is(':checked');
+});
+
+$('#config-imglink').change(function () {
+   $('.img-download-link').toggle();
+});
 
 //mobile checking
 var isMobile = false;
