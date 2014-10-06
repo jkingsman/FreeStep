@@ -43,7 +43,9 @@ Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), who
   var socket = io.connect("168.235.152.38:80");
   ```
 
-* Note that the current build is configured for SSL. To configure for non-SSL, change `https = require("https"),` to `http = require("http"),` remove the `sslOptions` param from `var server = https.createServer(sslOptions, app);`, and change port numbers to something more appropriate.
+### IMPORTANT SSL NOTE
+
+* The current build is configured for SSL. To configure for non-SSL, change `https = require("https"),` to `http = require("http"),` remove the `sslOptions` param from `var server = https.createServer(sslOptions, app);`, and change port numbers to something more appropriate. You'll lso need to delete the big comment-block-bracketed chunk at the top that redirects from HTTP->HTTPS.
 
 ### Install and run the app
 
