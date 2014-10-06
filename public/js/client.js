@@ -208,6 +208,7 @@ $(document).ready(function () {
    if (typeof urlParam["room"] != "undefined") {
       $("#name").val("Guest" + Math.floor((Math.random() * 10000) + 1));
       $("#room").val(urlParam["room"]);
+      $("#pass").focus();
    }
 
    //check file upload support
