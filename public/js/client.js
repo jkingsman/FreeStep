@@ -54,13 +54,11 @@ function postChat(message) {
    
    //handle the options for the window being in and out of focus  
    if (configAudioUnfocus && !document.hasFocus()) {
-      console.log("playing because" + configAudioUnfocus + !document.hasFocus());
       notify.play();
    }
    
    //handle the options for the window being in and out of focus  
    if (configAudioFocus && document.hasFocus()) {
-      console.log("playing because" + configAudioUnfocus + document.hasFocus());
       notify.play();
    }
    
@@ -69,6 +67,21 @@ function postChat(message) {
       missedNotifications++;
    }
 }
+
+//query the url for the given parameter; used in case of a link to the room
+var urlParam = (function(a) {
+    if (a == "") return {};
+    var b = {};
+    for (var i = 0; i < a.length; ++i)
+    {
+        var p=a[i].split('=', 2);
+        if (p.length == 1)
+            b[p[0]] = "";
+        else
+            b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+    }
+    return b;
+})(window.location.search.substr(1).split('&'));
 
 function clearFileInput(){ 
     var oldInput = document.getElementById("file-select"); 
@@ -190,16 +203,16 @@ $(document).ready(function () {
    else{
       $("#name").blur();
    }
+   
+   //check if they got here via a link
+   if (typeof urlParam["room"] != "undefined") {
+      $("#name").val("Guest" + Math.floor((Math.random() * 10000) + 1));
+      $("#room").val(urlParam["room"]);
+   }
 
    //check file upload support
    if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
       ("#connect-status").append("<li>Warning: file uploads not supported in this browser.</li>");
-   }
-   //check mobile, and, if mobile, expose the image link config option and file chooser for upload, and hide the drag/drop message
-   if (isMobile) {
-      $('#config-imglink-container').removeClass("hidden");
-      $('#file-select').removeClass("hidden");
-      $('#file-drag-message').addClass("hidden");
    }
 
    //form submit hook - they want to join
@@ -225,6 +238,7 @@ $(document).ready(function () {
       
       //set the room title classes to sanitized room name
       $(".room-title").html(sanitizeToHTMLSafe(myRoomID));
+      $("#share-url").val("https://freestep.net/?room=" + encodeURIComponent(myRoomID));
       
       //seet page title
       document.title = "FreeStep | " + myRoomID;
@@ -240,9 +254,17 @@ $(document).ready(function () {
 	 $("#room").blur();
 	 $("#pass").blur();
       }
+      
+      //check mobile, and, if mobile, expose the image link config option and file chooser for upload, and hide the drag/drop message
+      if (isMobile) {
+	 $('#config-imglink-container').removeClass("hidden");
+	 $('#file-select').removeClass("hidden");
+	 $('#file-drag-message').addClass("hidden");
+      }
 
       //finally, expose the main room
       showChat();
+      
    });
 
    //oops. They done goofed.
