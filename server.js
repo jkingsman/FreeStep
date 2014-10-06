@@ -1,10 +1,52 @@
 var express = require('express'),
-   app = express(),
-   server = require('http').createServer(app),
-   io = require("socket.io").listen(server),
-   sqlite3 = require('sqlite3').verbose();
+   https = require("https"),
+   fs = require('fs');
    
-var db = new sqlite3.Database(':memory:');
+/***
+ *
+ * This is for HTTP redirecting to HTTPS - if you're running this as HTTP, delete below until the closing comment block
+ *
+ ***/ 
+var http = express.createServer();
+
+// set up a route to redirect http to https
+http.get('*',function(req,res){  
+    res.redirect('https://freestep.net')
+})
+
+// have it listen on 80
+http.listen(80);
+
+/***
+ *
+ * This is for HTTP redirecting to HTTPS - if you're running this as HTTP, delete above until the opening comment block
+ *
+ ***/ 
+
+var privateKey = fs.readFileSync('ssl/server.key').toString();
+var certificate = fs.readFileSync('ssl/freestep_net.crt').toString();
+var ca = fs.readFileSync('ssl/COMODO.ca-bundle').toString();
+
+var sslOptions = {
+    key: fs.readFileSync('ssl/server.key'),
+    cert: fs.readFileSync('ssl/freestep_net.crt'),
+    ca: fs.readFileSync('ssl/COMODO.ca-bundle')
+};
+
+var app = express();
+var server = https.createServer(sslOptions, app);
+var io = require("socket.io").listen(server);
+
+app.configure(function () {
+   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 443);
+   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "freestep.net");
+   app.use(express.json());
+   app.use(express.urlencoded());
+   app.use(express.methodOverride());
+   app.use(express.compress());
+   app.use(express.static(__dirname + '/public'));
+   app.use('/components', express.static(__dirname + '/components'));
+});
 
 //lets us get room memebers in socket.io >=1.0
 function findClientsSocketByRoomId(roomId) {
@@ -18,17 +60,6 @@ function findClientsSocketByRoomId(roomId) {
    return res;
 }
 
-app.configure(function () {
-   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
-   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "psychologger.com");
-   app.use(express.json());
-   app.use(express.urlencoded());
-   app.use(express.methodOverride());
-   app.use(express.compress());
-   app.use(express.static(__dirname + '/public'));
-   app.use('/components', express.static(__dirname + '/components'));
-});
-
 app.get('/', function (req, res) {
    res.render('index.html');
 });
@@ -41,8 +72,9 @@ io.sockets.on("connection", function (socket) {
    var lastImageSend = 0;
 
    //emits newuser
-   socket.on("joinReq", function (name, pass) {
-      var roomID = pass;
+   socket.on("joinReq", function (name, room, password) {
+      var roomID = room + password;
+      var roomPassword = password;
       var allowJoin = 1;
       var denyReason = null;
 
