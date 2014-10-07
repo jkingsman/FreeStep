@@ -1,6 +1,6 @@
 # FreeStep
 
-Open source, fully encrypted chat goodness. Built as an open source clone of ChatStep, with node.js/socket.io/Bootstrap. 
+Open source, fully encrypted chat goodness. Built as an open source clone of ChatStep, with node.js/socket.io/Bootstrap. [Check out the live demo, fully featured and available for use!](https://freestep.net)
 
 **_I welcome your feedback greatly! Whether you're a beginner trying to use this to learn, or an expert who can poke holes in my encryption, please let me know! This is imperfect software that I'll keep developing as time goes own._**
 
