@@ -141,6 +141,9 @@ var myRoomID = password = name = null;
 //config vars
 var configFile = configAudioFocus = configAudioUnfocus = true;
 
+//message unique id
+var messageCount = 0;
+
 /* 
  *
  * Config options
@@ -344,7 +347,8 @@ $(document).ready(function () {
       }
       
       //package it and post it!
-      postChat("<div class=\"message " + msgOwner + "\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</strong></span><span class=\"message-body\"> " + msgCore + "</span></div>");
+      postChat("<div class=\"message " + msgOwner + "\" id=\"message-" + messageCount + "\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</strong></span><span class=\"message-body\"> " + msgCore + "</span></div>");
+      messageCount++;
    });
 
    //get a status update
