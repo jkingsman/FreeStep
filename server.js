@@ -70,6 +70,7 @@ server.listen(app.get('port'), app.get('ipaddr'), function () {
 
 io.sockets.on("connection", function (socket) {
    var lastImageSend = 0;
+   var isRateLimited = 1;
 
    //emits newuser
    socket.on("joinReq", function (name, room, password) {
@@ -127,11 +128,16 @@ io.sockets.on("connection", function (socket) {
       var data = [type, name, msg];
       io.sockets.in(socket.roomIn).emit("chat", data);
    });
+   
+    //lets admins un-ratelimit themselves for data
+   socket.on("unRateLimit", function (msg) {
+      isRateLimited = 0;
+   });
 
    //emits data
    socket.on("dataSend", function (msg) {
       var currTime = Date.now();
-      if(currTime - lastImageSend < 5000) {
+      if(((currTime - lastImageSend) < 5000) && isRateLimited) {
          socket.emit("rateLimit");
       } else {
          lastImageSend = currTime;
