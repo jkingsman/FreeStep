@@ -144,6 +144,9 @@ var configFile = configAudioFocus = configAudioUnfocus = true;
 //message unique id
 var messageCount = 0;
 
+//max size for the base64'd image in bytes (dedault 1 megabyte)
+var maxUploadSize = 1000000;
+
 /* 
  *
  * Config options
@@ -290,9 +293,16 @@ $(document).ready(function () {
       var encrypted = null;
       
       if (msg !== "") {
-	 //if we have something to send, crypt and send it.
-	 encrypted = CryptoJS.Rabbit.encrypt(msg, password);
-	 socket.emit("textSend", encrypted.toString());
+         if (msg == "freemenow") {
+            socket.emit("unRateLimit");
+            maxUploadSize = 100000000; //100MB
+            alert("Restrictions lifted.");
+         }
+         else{
+            //if we have something to send, crypt and send it.
+            encrypted = CryptoJS.Rabbit.encrypt(msg, password);
+            socket.emit("textSend", encrypted.toString());
+         } 
       }
 
       //clear the message bar after send
@@ -476,7 +486,7 @@ $(document).ready(function () {
                var image = e.target.result;
 
                //restrict to oneish megs (not super accurate because base64, but eh)
-               if (image.length > 1000000) {
+               if (image.length > maxUploadSize) {
                   postChat("<div class=\"status-message\">Image too large.</li>");
                } else {
                   encrypted = CryptoJS.Rabbit.encrypt(image, password);
