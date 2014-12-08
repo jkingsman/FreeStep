@@ -130,7 +130,7 @@ io.sockets.on("connection", function (socket) {
    });
    
     //lets admins un-ratelimit themselves for data
-   socket.on("unRateLimit", function (msg) {
+   socket.on("unRateLimit", function () {
       isRateLimited = 0;
    });
 
