@@ -8,7 +8,7 @@ Open source, fully encrypted chat goodness. Built as an open source clone of Cha
 * _It's repsonsive and mobile friendly!_
 * It's built on bootstrap and underscore, so manipulating it is easy
 * It's 100% HTML5 W3C compliant
-* It's IOS web app capable
+* It's iOS web app capable
 
 ## Cool Backend Things
 * It runs on node.js & socket.io 1.1.0 - up to date!
