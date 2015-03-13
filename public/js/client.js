@@ -353,7 +353,13 @@ $(document).ready(function () {
 	 msgOwner = "my-message";
       }
       else {
-	 msgOwner = "their-message";
+         if (msgCore.indexOf(name) > -1) {
+            //we're mentioned
+            msgOwner = "their-message mentioned";
+         }
+         else{
+            msgOwner = "their-message";
+         }
       }
       
       //package it and post it!

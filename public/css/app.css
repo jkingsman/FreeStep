@@ -110,6 +110,11 @@ body {
   background:#c8ffc8;
 }
 
+.mentioned .message-body {
+  float:left;
+  background:#ffc8c8;
+}
+
 .my-message .message-metadata .messsage-name, .my-message .message-metadata .message-timestamp {
   float: left;
 }
