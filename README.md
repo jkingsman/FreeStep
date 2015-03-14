@@ -23,7 +23,7 @@ Open source, fully encrypted chat goodness. Built as an open source clone of Cha
 
 Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), whose project was my main teacher of node and socket, and the spiritual predecessor to this app.
 
-## Shut up and let me try it!
+## Installation
 
 ### Get the files
 
@@ -42,6 +42,9 @@ Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), who
   ```js
   var socket = io.connect("168.235.152.38:80");
   ```
+* If desired, change the `customMode`, `appName`, and `appByline` variables in `client.js` to have a custom name, byline, and home page.
+
+* Install node and bower dependencies with `npm install`.
 
 ### IMPORTANT SSL NOTE
 
