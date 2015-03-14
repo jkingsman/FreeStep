@@ -326,6 +326,9 @@ $(document).ready(function () {
       
       //msg core is used later in message construction
       var msgCore, msgOwner = null;
+      
+      //regex to match URLS
+      var matchPattern = /(\b(((https?|ftp):\/\/)|magnet:)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 
       /*
        * Message Core Assembly
@@ -336,8 +339,8 @@ $(document).ready(function () {
        */
       
       if (type == 0) {
-	 //it's text - sanitize the decrypted text and we're done
-         msgCore = sanitizeToHTMLSafe(msg);
+	 //it's text. Sanitize the decrypted text, linkify it and we're done
+         msgCore = sanitizeToHTMLSafe(msg).replace(matchPattern, '<a href="$1" target="_blank">$1</a>');
       }
       else if (type == 1) {
 	 //it's an image
