@@ -1,6 +1,6 @@
 {
   "name": "freestep",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "open source node.js/socket.io chat app",
   "main": "server.js",
   "dependencies": {
