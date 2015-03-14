@@ -47,25 +47,16 @@ function getHTMLStamp() {
 }
 
 //add the text to the chat window, and handle notifications
-function postChat(message) {
+function postChat(message, mentionStatus) {
    $("#msgs").append(message);
    $("#msgs").append("<div class=\"clearfix\"></div>");
    $(window).scrollTop($(window).scrollTop() + 5000);
    
    //handle the options for the window being in and out of focus  
-   if (configAudioUnfocus && !document.hasFocus()) {
+   if ((playOnBackground && !document.hasFocus()) || mentionStatus) {
       notify.play();
    }
-   
-   //handle the options for the window being in and out of focus  
-   if (configAudioFocus && document.hasFocus()) {
-      notify.play();
-   }
-   
-   //add to our missed notifications if appropriate
-   if (!document.hasFocus()) {
-      missedNotifications++;
-   }
+
 }
 
 //query the url for the given parameter; used in case of a link to the room
@@ -139,7 +130,7 @@ var socket = io.connect("freestep.net:443");
 var myRoomID = password = name = null;
 
 //config vars
-var configFile = configAudioFocus = configAudioUnfocus = true;
+var configFile = playOnBackground = true;
 
 //message unique id
 var messageCount = 0;
@@ -161,13 +152,12 @@ $('#config-files').change(function () {
    configFile = $('#config-files').is(':checked');
 });
 
-$('#config-audio-focus').change(function () {
-   configAudioFocus = $('#config-audio-focus').is(':checked');
+$('input[name=config-audio]:radio').change(function () {
+   //ghetto conversion to bool
+   playOnBackground = ($('input[name=config-audio]:checked').val() == "1");
 });
  
-$('#config-audio-unfocus').change(function () {
-   configAudioUnfocus = $('#config-audio-unfocus').is(':checked');
-});
+
 
 $('#config-imglink').change(function () {
    $('.img-download-link').toggle();
@@ -362,8 +352,8 @@ $(document).ready(function () {
          }
       }
       
-      //package it and post it!
-      postChat("<div class=\"message " + msgOwner + "\" id=\"message-" + messageCount + "\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</strong></span><span class=\"message-body\"> " + msgCore + "</span></div>");
+      //package it and post it, including our mention status
+      postChat("<div class=\"message " + msgOwner + "\" id=\"message-" + messageCount + "\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</strong></span><span class=\"message-body\"> " + msgCore + "</span></div>", (msgCore.indexOf(name) > -1));
       messageCount++;
    });
 
