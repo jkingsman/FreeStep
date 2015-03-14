@@ -138,6 +138,13 @@ var messageCount = 0;
 //max size for the base64'd image in bytes (dedault 1 megabyte)
 var maxUploadSize = 1000000;
 
+//customMode disables the front panel paragraphs
+var customMode = 0;
+
+//set the name and byline of the app
+var appName = "FreeStep";
+var appByline = "Open source, private chat goodness.<br />Built with node.js/socket.io/Bootstrap.";
+
 /* 
  *
  * Config options
@@ -156,8 +163,6 @@ $('input[name=config-audio]:radio').change(function () {
    //ghetto conversion to bool
    playOnBackground = ($('input[name=config-audio]:checked').val() == "1");
 });
- 
-
 
 $('#config-imglink').change(function () {
    $('.img-download-link').toggle();
@@ -191,7 +196,15 @@ $(document).ready(function () {
       event.preventDefault();
    });
 
-   //prep for login display - hide the main screen and focus on the name box when appropriate
+   //prep for login display - set paragraphs and titles
+   if (customMode){
+      $("#paragraph-block").hide();
+   }
+   
+   $(".app-title-box").html(appName);
+   $(".app-byline-box").html(appByline);
+   
+   //curtains up! hide the main screen and focus on the name box when appropriate
    $("#main-chat-screen").hide();
    if (!isMobile) {
       $("#name").focus();

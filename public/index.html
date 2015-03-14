@@ -54,9 +54,8 @@
    <div id="login-screen">
       <div class="row">
          <div class="main col-md-4 col-md-offset-4">
-            <h1><i class="glyphicon glyphicon-retweet"></i> FreeStep</h1>
-            <p class="lead">Open source, private chat goodness.
-               <br />Built with node.js/socket.io/Bootstrap.</p>
+            <h1><i class="glyphicon glyphicon-retweet"></i> <span class="app-title-box"></span></h1>
+            <p class="lead app-byline-box"></p>
             <form class="form" id="nameForm">
                <div class="form-group">
 
@@ -85,7 +84,7 @@
             <ul id="connect-status" class="list-unstyled"></ul>
          </div>
       </div>
-      <div class="row">
+      <div class="row" id="paragraph-block">
          <div class="col-lg-12">
             <h1 class="text-center">Why FreeStep?</h1>
          </div>
@@ -111,7 +110,7 @@
    </div>
    <div id="main-chat-screen" style="display: none;">
       <div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm padded">
-         <h1 class="visible-md visible-lg text-center" style="color: #777; "><i class="glyphicon glyphicon-retweet"></i> <a href="/">FreeStep</a></h1>
+         <h1 class="visible-md visible-lg text-center" style="color: #777; "><i class="glyphicon glyphicon-retweet"></i> <a href="/"><span class="app-title-box"></span></a></h1>
          <h3 class="text-center" style="margin-top: 5px; /* Fix for mobile menu */">Room: <span class="room-title">Room Name</span></h3>
 	 <label>Share: <input type="text" id="share-url" value="https://freestep.net/?room=" onclick="this.select();"></label>
          <div class="panel panel-default">
@@ -146,6 +145,7 @@
          </div>
          <span id="file-drag-message">Drag and drop to send images.</span>
          <input type="file" id="file-select" name="files" class="hidden" />
+         <br /><br /><p class="text-center"><em>Powered by <a href="https://github.com/jkingsman/FreeStep">FreeStep</a></em></p>
       </div>
 
       <div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
