@@ -31,7 +31,7 @@ Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), who
 * Fork this repo to your own account
 * Clone to your box (`git init && git clone git@github.com:youruser/FreeStep.git`)
 
-### Configure the app
+### Configure & Install the app
 * Change port and host to your own port and IP in `server.js`:
   ```js
   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 80);
@@ -44,7 +44,7 @@ Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), who
   ```
 * If desired, change the `customMode`, `appName`, and `appByline` variables in `client.js` to have a custom name, byline, and home page.
 
-* Install node and bower dependencies with `npm install`.
+* Install node and bower dependencies with `npm install`. Note that this should *not* be run with admin credentials, as the post-install `bower install` will cause problems/error out when attempted as root.
 
 ### IMPORTANT SSL NOTE
 
