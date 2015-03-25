@@ -29,7 +29,7 @@ Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), who
 
 * Install node & npm (`sudo yum install nodejs npm` for CentOS with `EPEL` repos; beyond that, try [here](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager))
 * Fork this repo to your own account
-* Clone to your box (`git init && git clone git@github.com:youruser/FreeStep.git`)
+* Clone to your box (`git clone git@github.com:jkingsman/FreeStep.git`)
 
 ### Configure & Install the app
 * Change port and host to your own port and IP in `server.js`:
