@@ -123,6 +123,7 @@ io.sockets.on("connection", function (socket) {
 
    //emits chat
    socket.on("textSend", function (msg) {
+      //0 = text
       var type = 0;
       var name = socket.nickname;
       var data = [type, name, msg];
@@ -138,9 +139,11 @@ io.sockets.on("connection", function (socket) {
    socket.on("dataSend", function (msg) {
       var currTime = Date.now();
       if(((currTime - lastImageSend) < 5000) && isRateLimited) {
+         //it's been less than five seconds; no data for you!
          socket.emit("rateLimit");
       } else {
          lastImageSend = currTime;
+         //1 = image
          var type = 1;
          var name = socket.nickname;
          var data = [type, name, msg];
