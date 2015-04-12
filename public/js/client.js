@@ -227,7 +227,7 @@ $(document).ready(function () {
 
    //form submit hook - they want to join
    $("#nameForm").submit(function () {
-      //load up the form
+      //load up the form into our globals
       name = $("#name").val();
       myRoomID = $("#room").val();
       password = $("#pass").val();
