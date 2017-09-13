@@ -7,7 +7,7 @@
     "typeahead.js": "latest",
     "font-awesome": "latest",
     "underscore": "latest",
-    "crypto-js": "http://crypto-js.googlecode.com/files/CryptoJS%20v3.1.2.zip",
+    "crypto-js": "release-3.1.2-5",
     "jasny-bootstrap": "latest"
   },
   "directory": "components",
