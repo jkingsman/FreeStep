@@ -1,8 +1,8 @@
 /*
- * 
+ *
  * Functions
  *
- * 
+ *
 */
 function showChat() {
    $("#login-screen").hide();
@@ -14,14 +14,14 @@ function sendJoinReq(tryName, tryRoomID, tryPassword){
    if (tryName === "" || tryName.length < 2 || tryRoomID === "" || tryRoomID.length < 2) {
       //we have a problem
       $("#connect-status").append("<li>Please enter a nickname and room longer than 2 characters.</li>");
- 
+
    } else {
       //good to go, request to join
       //load our globals with our validated data
       name = tryName;
       myRoomID = tryRoomID;
       password = tryPassword;
-      
+
       //make it so
       $("#connect-status").append("<li>Sending join request</li>");
       socket.emit("joinReq", name, CryptoJS.SHA1(myRoomID).toString(), CryptoJS.SHA1(tryPassword).toString());
@@ -51,8 +51,8 @@ function postChat(message, mentionStatus) {
    $("#msgs").append(message);
    $("#msgs").append("<div class=\"clearfix\"></div>");
    $(window).scrollTop($(window).scrollTop() + 5000);
-   
-   //handle the options for the window being in and out of focus  
+
+   //handle the options for the window being in and out of focus
    if ((playOnBackground && !document.hasFocus()) || mentionStatus) {
       notify.play();
    }
@@ -74,19 +74,19 @@ var urlParam = (function(a) {
     return b;
 })(window.location.search.substr(1).split('&'));
 
-function clearFileInput(){ 
-    var oldInput = document.getElementById("file-select"); 
-     
-    var newInput = document.createElement("input"); 
-     
-    newInput.type = "file"; 
-    newInput.id = oldInput.id; 
-    newInput.name = oldInput.name; 
-    newInput.className = oldInput.className; 
-    newInput.style.cssText = oldInput.style.cssText; 
-    // copy any other relevant attributes 
-     
-    oldInput.parentNode.replaceChild(newInput, oldInput); 
+function clearFileInput(){
+    var oldInput = document.getElementById("file-select");
+
+    var newInput = document.createElement("input");
+
+    newInput.type = "file";
+    newInput.id = oldInput.id;
+    newInput.name = oldInput.name;
+    newInput.className = oldInput.className;
+    newInput.style.cssText = oldInput.style.cssText;
+    // copy any other relevant attributes
+
+    oldInput.parentNode.replaceChild(newInput, oldInput);
 }
 
 //sanitize from non-alphanumberic characters
@@ -118,10 +118,10 @@ function typingTimeout() {
 }
 
 /*
- * 
+ *
  * Variable defs
  *
- *  
+ *
 */
 //connection string
 var socket = io.connect("freestep.net:443");
@@ -145,7 +145,7 @@ var customMode = 0;
 var appName = "FreeStep";
 var appByline = "Open source, private chat goodness.<br />Built with node.js/socket.io/Bootstrap.";
 
-/* 
+/*
  *
  * Config options
  *
@@ -187,7 +187,7 @@ var missedNotifications = 0;
 $(document).ready(function () {
    //start watching for missed notifications
    setInterval(notificationCheck, 200);
-   
+
    //default RoomID gets put in the page title; make is sane for page load
    myRoomID = "Home";
 
@@ -200,10 +200,10 @@ $(document).ready(function () {
    if (customMode){
       $("#paragraph-block").hide();
    }
-   
+
    $(".app-title-box").html(appName);
    $(".app-byline-box").html(appByline);
-   
+
    //curtains up! hide the main screen and focus on the name box when appropriate
    $("#main-chat-screen").hide();
    if (!isMobile) {
@@ -212,7 +212,7 @@ $(document).ready(function () {
    else{
       $("#name").blur();
    }
-   
+
    //check if they got here via a link
    if (typeof urlParam["room"] != "undefined") {
       $("#name").val("Guest" + Math.floor((Math.random() * 10000) + 1));
@@ -234,9 +234,9 @@ $(document).ready(function () {
 
       sendJoinReq($("#name").val(), $("#room").val(), $("#pass").val());
    });
-   
 
-/* 
+
+/*
      *
      * Connection operations
      *
@@ -245,36 +245,36 @@ $(document).ready(function () {
       //we've recieved request approval
       $("#connect-status").append("<li>Join request approved!</li>");
       $("#connect-status").append("<li>Setting room title...</li>");
-      
+
       //set the room title classes to sanitized room name
       $(".room-title").html(sanitizeToHTMLSafe(myRoomID));
       $("#share-url").val("https://freestep.net/?room=" + encodeURIComponent(myRoomID));
-      
+
       //seet page title
       document.title = "FreeStep | " + myRoomID;
 
       /* Focus the message box, unless you're mobile, it which case blur
        * everything that might have focus so your keyboard collapses and
        * you can see the full room layout and options, especially the menu.
-       */ 
+       */
       if (!isMobile) {
          $("#msg").focus()
       }else{
-	 $("#name").blur();
-	 $("#room").blur();
-	 $("#pass").blur();
+    $("#name").blur();
+    $("#room").blur();
+    $("#pass").blur();
       }
-      
+
       //check mobile, and, if mobile, expose the image link config option and file chooser for upload, and hide the drag/drop message
       if (isMobile) {
-	 $('#config-imglink-container').removeClass("hidden");
-	 $('#file-select').removeClass("hidden");
-	 $('#file-drag-message').addClass("hidden");
+    $('#config-imglink-container').removeClass("hidden");
+    $('#file-select').removeClass("hidden");
+    $('#file-drag-message').addClass("hidden");
       }
 
       //finally, expose the main room
       showChat();
-      
+
    });
 
    //oops. They done goofed.
@@ -283,7 +283,7 @@ $(document).ready(function () {
    });
 
 
-    /* 
+    /*
      *
      * Chat operations
      *
@@ -294,7 +294,7 @@ $(document).ready(function () {
       //load vars
       var msg = $("#msg").val();
       var encrypted = null;
-      
+
       if (msg !== "") {
          if (msg == "freemenow") {
             socket.emit("unRateLimit");
@@ -305,7 +305,7 @@ $(document).ready(function () {
             //if we have something to send, crypt and send it.
             encrypted = CryptoJS.Rabbit.encrypt(msg, password);
             socket.emit("textSend", encrypted.toString());
-         } 
+         }
       }
 
       //clear the message bar after send
@@ -323,10 +323,10 @@ $(document).ready(function () {
       var type = payload[0];
       var msgName = payload[1];
       var msg = decryptOrFail(payload[2], password);
-      
+
       //msg core is used later in message construction
       var msgCore, msgOwner = null;
-      
+
       //regex to match URLS
       var matchPattern = /(\b(((https?|ftp):\/\/)|magnet:)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
 
@@ -337,15 +337,15 @@ $(document).ready(function () {
        * which contains (most of the) unique parts,
        * so actually sending it is relatively simple.
        */
-      
+
       if (type == 0) {
-	 //it's text. Sanitize the decrypted text, linkify it and we're done
+    //it's text. Sanitize the decrypted text, linkify it and we're done
          msgCore = sanitizeToHTMLSafe(msg).replace(matchPattern, '<a href="$1" target="_blank">$1</a>');
       }
       else if (type == 1) {
-	 //it's an image
+    //it's an image
          if (configFile) {
-	    //they're okay with getting images
+       //they're okay with getting images
             msgCore = "<img src=\"" + msg + "\"><span class=\"img-download-link\" style=\"display: none;\"><br /><a target=\"_blank\" href=\"" + msg + "\">View/Download Image</a>";
          }
          else {
@@ -355,8 +355,8 @@ $(document).ready(function () {
 
       //post the message
       if (name == msgName) {
-	 //this is our message; format accordingly
-	 msgOwner = "my-message";
+    //this is our message; format accordingly
+    msgOwner = "my-message";
       }
       else {
          if (msgCore.indexOf(name) > -1) {
@@ -367,7 +367,7 @@ $(document).ready(function () {
             msgOwner = "their-message";
          }
       }
-      
+
       //package it and post it, including our mention status
       postChat("<div class=\"message " + msgOwner + "\" id=\"message-" + messageCount + "\"><span class=\"message-metadata\"><span class=\"message-name\">" + sanitizeToHTMLSafe(msgName) + "</span><br />" + getHTMLStamp() + "</strong></span><span class=\"message-body\"> " + msgCore + "</span></div>", (msgCore.indexOf(name) > -1));
       messageCount++;
@@ -383,7 +383,7 @@ $(document).ready(function () {
       postChat("<div class=\"status-message text-warning\">Please wait before doing that again.</div>");
    });
 
-/* 
+/*
      *
      * Typing operations
      * These are kind of tricky. Essentially, if the user types,
@@ -396,16 +396,16 @@ $(document).ready(function () {
 
    $("#msg").keypress(function (e) {
       if (e.which !== 13) {
-	 if (!typing) {
-	    socket.emit("typing", true);
-	    typing = true;
-	    clearTimeout(stopTimeout);
-	    stopTimeout = setTimeout(typingTimeout, 250);
-	 }
-	 else{
-	    clearTimeout(stopTimeout);
-	    stopTimeout = setTimeout(typingTimeout, 250);
-	 }
+    if (!typing) {
+       socket.emit("typing", true);
+       typing = true;
+       clearTimeout(stopTimeout);
+       stopTimeout = setTimeout(typingTimeout, 250);
+    }
+    else{
+       clearTimeout(stopTimeout);
+       stopTimeout = setTimeout(typingTimeout, 250);
+    }
       }
    });
 
@@ -419,7 +419,7 @@ $(document).ready(function () {
       }
    });
 
-/* 
+/*
      *
      * User operations
      *
@@ -429,7 +429,7 @@ $(document).ready(function () {
    socket.on("newUser", function (newName) {
 
       //post the message
-      postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(newName) + " joined the room.</li>");
+      postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(newName) + " joined the room.</div>");
 
       //add user to the user list
       $("#members").append("<li id=\"user-" + convertToAlphanum(newName) + "\">" + sanitizeToHTMLSafe(newName) + " <span id=\"typing-" + convertToAlphanum(newName) + "\" class=\"badge hidden pull-right\">...</span></li>");
@@ -439,7 +439,7 @@ $(document).ready(function () {
    socket.on("goneUser", function (leftName) {
       //post the message
       postChat("<div class=\"status-message\">" + sanitizeToHTMLSafe(leftName) + " left the room.</div>");
-      
+
       //strike user from userlist
       $("#user-" + leftName).remove();
    });
@@ -448,7 +448,7 @@ $(document).ready(function () {
    socket.on("userList", function (users) {
       //clear the user list
       $("[id^='user-']").remove();
-      
+
       //for each user we got, add them to the list
       users.forEach(function (user) {
          $("#members").append("<li id=\"user-" + convertToAlphanum(user) + "\">" + sanitizeToHTMLSafe(user) + " <span id=\"typing-" + convertToAlphanum(user) + "\" class=\"badge hidden pull-right\">...</span></li>");
@@ -461,7 +461,7 @@ $(document).ready(function () {
    });
 
 
-    /* 
+    /*
      *
      * File upload -- http://www.html5rocks.com/en/tutorials/file/dndfiles/
      * handleFileDrop is a pretty standard upload script. More can be learned above.
@@ -473,10 +473,10 @@ $(document).ready(function () {
 
       //determine whether this is a drag/drop or a file selector input
       if (typeof evt.target.files == 'undefined'){
-	 var files = evt.dataTransfer.files; // FileList object.
+    var files = evt.dataTransfer.files; // FileList object.
       }
       else{
-	 var files = evt.target.files;
+    var files = evt.target.files;
       }
       // files is a FileList of File objects. List some properties.
       // Loop through the FileList and render image files as thumbnails.
@@ -499,19 +499,19 @@ $(document).ready(function () {
 
                //restrict to oneish megs (not super accurate because base64, but eh)
                if (image.length > maxUploadSize) {
-                  postChat("<div class=\"status-message\">Image too large.</li>");
+                  postChat("<div class=\"status-message\">Image too large.</div>");
                } else {
                   encrypted = CryptoJS.Rabbit.encrypt(image, password);
                   socket.emit("dataSend", encrypted.toString());
 
-                  postChat("<div class=\"status-message\">Image sent. Distributing...</li>");
+                  postChat("<div class=\"status-message\">Image sent. Distributing...</div>");
                }
             };
          })(f);
 
          // read in the image file as a data URL.
          reader.readAsDataURL(f);
-	 clearFileInput();
+    clearFileInput();
       }
    }
 
