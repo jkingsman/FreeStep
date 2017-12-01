@@ -4,7 +4,7 @@ var express = require('express'),
    fs = require('fs');
 var methodOverride = require('method-override');
 var compression    = require('compression');
-var static         = require('serve-static');
+var serveStatic    = require('serve-static');
 var bodyParser     = require('body-parser');
 
 var app = express();
@@ -55,8 +55,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : false }));
 app.use(methodOverride());
 app.use(compression());
-app.use(static(__dirname + '/public'));
-app.use('/components', static(__dirname + '/components'));
+app.use(serveStatic(__dirname + '/public'));
+app.use('/components', serveStatic(__dirname + '/components'));
 
 //lets us get room memebers in socket.io >=1.0
 function findClientsSocketByRoomId (roomId, callback) {
@@ -110,11 +110,9 @@ io.use(function (socket, next) {
    // Initialize
    socket_data[socket.id] = {};
    socket.get = function (key) {
-      console.log('GET', key);
       return socket_data[socket.id][key];
    };
    socket.set = function (key, value) {
-      console.log('SET', key, value);
       socket_data[socket.id][key] = value;
    };
    next();
