@@ -38,7 +38,7 @@ var sslOptions = {
     cert: fs.readFileSync('ssl/freestep_net.crt'),
     ca: fs.readFileSync('ssl/COMODO.ca-bundle')
 };
-server = https.createServer(sslOoptions, app);
+server = https.createServer(sslOptions, app);
 } else {
    server = http.createServer(app);
 }
