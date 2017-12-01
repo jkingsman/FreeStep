@@ -1,21 +1,27 @@
 var express = require('express'),
+   http = require('http'),
    https = require("https"),
    fs = require('fs');
-   
+
+var app = express();
+var server;
+var enable_ssl = false;
+
 /***
  *
  * This is for HTTP redirecting to HTTPS - if you're running this as HTTP, delete below until the closing comment block
  *
  ***/ 
-var http = express();
+if (enable_ssl === true) {
+var httpapp = express();
 
 // set up a route to redirect http to https
-http.get('*',function(req,res){  
+httpapp.get('*',function(req,res){  
     res.redirect('https://freestep.net')
 })
 
 // have it listen on 80
-http.listen(80);
+httpapp.listen(80);
 
 /***
  *
@@ -32,14 +38,16 @@ var sslOptions = {
     cert: fs.readFileSync('ssl/freestep_net.crt'),
     ca: fs.readFileSync('ssl/COMODO.ca-bundle')
 };
+server = https.createServer(sslOptions, app);
+} else {
+   server = http.createServer(app);
+}
 
-var app = express();
-var server = https.createServer(sslOptions, app);
 var io = require("socket.io").listen(server);
 
 app.configure(function () {
-   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 443);
-   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "freestep.net");
+   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
+   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
    app.use(express.json());
    app.use(express.urlencoded());
    app.use(express.methodOverride());
