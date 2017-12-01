@@ -3,6 +3,9 @@ var express = require('express'),
    https = require("https"),
    fs = require('fs');
 var methodOverride = require('method-override');
+var compression    = require('compression');
+var static         = require('serve-static');
+var bodyParser     = require('body-parser');
 
 var app = express();
 var server;
@@ -48,12 +51,12 @@ var io = require("socket.io").listen(server);
 
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
 app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
-app.use(express.json());
-app.use(express.urlencoded());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended : false }));
 app.use(methodOverride());
-app.use(express.compress());
-app.use(express.static(__dirname + '/public'));
-app.use('/components', express.static(__dirname + '/components'));
+app.use(compression());
+app.use(static(__dirname + '/public'));
+app.use('/components', static(__dirname + '/components'));
 
 //lets us get room memebers in socket.io >=1.0
 function findClientsSocketByRoomId(roomId) {

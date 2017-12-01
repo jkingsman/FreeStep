@@ -4,8 +4,11 @@
   "description": "open source node.js/socket.io chat app",
   "main": "server.js",
   "dependencies": {
-    "express": "3.21.2",
+    "express": "4.16.2",
+    "body-parser": "1.18.2",
+    "compression": "1.7.1",
     "method-override": "2.3.10",
+    "serve-static": "1.13.1",
     "socket.io": "1.1.0",
     "bower": "1.8.2"
   },
