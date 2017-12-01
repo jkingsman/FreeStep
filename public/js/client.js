@@ -124,7 +124,7 @@ function typingTimeout() {
  *
 */
 //connection string
-var socket = io.connect("freestep.net:443");
+var socket = io.connect("127.0.0.1:3000");
 
 //vars for room data
 var myRoomID = password = name = null;

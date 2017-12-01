@@ -2,13 +2,12 @@
   "name": "freestep",
   "version": "1.0.0",
   "dependencies": {
-    "bootstrap": "latest",
+    "bootstrap": "3.3.7",
     "jquery": "latest",
     "typeahead.js": "latest",
     "font-awesome": "latest",
     "underscore": "latest",
-    "crypto-js": "release-3.1.2-5",
-    "jasny-bootstrap": "latest"
+    "crypto-js": "3.1.9"
   },
   "directory": "components",
   "homepage": "https://github.com/jkingsman/FreeStep.git",

@@ -23,6 +23,15 @@ Open source, fully encrypted chat goodness. Built as an open source clone of Cha
 
 Special thanks to [tamaspiros](https://github.com/tamaspiros/advanced-chat), whose project was my main teacher of node and socket, and the spiritual predecessor to this app.
 
+## QuickStart
+
+Wondering if FreeStap is right for you?  Use the below instructions to get a local demo of FreeStep working on your machine.
+
+* Clone the repository (`git clone git@github.com:jkingsman/FreeStep.git`)
+* Install dependencies (`npm install`)
+* Start the server (`node server.js`)
+* View in browser [http://localhost:3000](http://localhost:3000)
+
 ## Installation
 
 ### Get the files
