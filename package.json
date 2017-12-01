@@ -6,7 +6,6 @@
   "dependencies": {
     "express": "~3.4.8",
     "socket.io": "1.1.0",
-    "shrinkwrap": "~0.0.3",
     "bower": "~1.2.8"
   },
   "devDependencies": {},
