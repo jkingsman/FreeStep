@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "dependencies": {
     "bootstrap": "3.3.7",
-    "jquery": "latest",
-    "typeahead.js": "latest",
-    "font-awesome": "latest",
-    "underscore": "latest",
+    "jquery": "3.2.1",
+    "typeahead.js": "0.11.1",
+    "font-awesome": "4.7.0",
+    "underscore": "1.8.3",
     "crypto-js": "3.1.9"
   },
   "directory": "components",

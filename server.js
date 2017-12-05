@@ -2,6 +2,10 @@ var express = require('express'),
    http = require('http'),
    https = require("https"),
    fs = require('fs');
+var methodOverride = require('method-override');
+var compression    = require('compression');
+var serveStatic    = require('serve-static');
+var bodyParser     = require('body-parser');
 
 var app = express();
 var server;
@@ -45,27 +49,37 @@ server = https.createServer(sslOptions, app);
 
 var io = require("socket.io").listen(server);
 
-app.configure(function () {
-   app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
-   app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
-   app.use(express.json());
-   app.use(express.urlencoded());
-   app.use(express.methodOverride());
-   app.use(express.compress());
-   app.use(express.static(__dirname + '/public'));
-   app.use('/components', express.static(__dirname + '/components'));
-});
+app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
+app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended : false }));
+app.use(methodOverride());
+app.use(compression());
+app.use(serveStatic(__dirname + '/public'));
+app.use('/components', serveStatic(__dirname + '/components'));
 
 //lets us get room memebers in socket.io >=1.0
-function findClientsSocketByRoomId(roomId) {
-   var res = [],
-      room = io.sockets.adapter.rooms[roomId];
-   if(room) {
-      for(var id in room) {
-         res.push(io.sockets.adapter.nsp.connected[id]);
-      }
-   }
-   return res;
+function findClientsSocketByRoomId (roomId, callback) {
+   // Old Way
+   // var room = io.sockets.adapter.rooms[roomId];
+   // if(room) {
+   //    for(var id in room) {
+   //       res.push(io.sockets.adapter.nsp.connected[id]);
+   //    }
+   // }
+   // return res;
+
+   var res = [];
+   io.of('/').in(roomId).clients(function (error, clients) {
+      if (error) { return callback(error); }
+      clients.forEach(function (client) {
+         // Gets the socket
+         //io.sockets.sockets[client];
+         res.push(client);
+      });
+      callback(undefined, res);
+   });
+
 }
 
 app.get('/', function (req, res) {
@@ -74,6 +88,34 @@ app.get('/', function (req, res) {
 
 server.listen(app.get('port'), app.get('ipaddr'), function () {
    console.log('Express server listening on ' + app.get('ipaddr') + ':' + app.get('port'));
+});
+
+// Handles Socket Data Storage in Memory
+// Looking for persistent/Redis support? See below
+// https://github.com/socialtables/socket.io-store
+//
+// Example Data
+// socket_data = {
+//   '9evVFCugeYJWs6wFAAAA' : {
+//     'nickname' : 'bob',
+//     'roomIn'   : 'main'
+//   }
+//   '9evVFCugeYJWs6wFAAAA' : {
+//     'nickname' : 'bob',
+//     'roomIn'   : 'main'
+//   }
+// };
+var socket_data = {};
+io.use(function (socket, next) {
+   // Initialize
+   socket_data[socket.id] = {};
+   socket.get = function (key) {
+      return socket_data[socket.id][key];
+   };
+   socket.set = function (key, value) {
+      socket_data[socket.id][key] = value;
+   };
+   next();
 });
 
 io.sockets.on("connection", function (socket) {
@@ -88,54 +130,59 @@ io.sockets.on("connection", function (socket) {
       var denyReason = null;
 
       //get the client list and push it to the client
-      var clientsInRoom = findClientsSocketByRoomId(roomID);
-      var clientsInRoomArray = [];
-      var clientsInRoomArrayScrubbed = [];
-      clientsInRoom.forEach(function (client){
-         clientsInRoomArray.push(client.nickname);
-         /* the scrubbed one has the sanitized version as used in the username
-          * classes for typing, so we can check and avoid collisions.
-          */
-         clientsInRoomArrayScrubbed.push(client.nickname.replace(/\W/g, ''));
+      findClientsSocketByRoomId(roomID, function (error, clientsInRoom) {
+         if (error) { throw error; }
+
+         var clientsInRoomArray = [];
+         var clientsInRoomArrayScrubbed = [];
+         clientsInRoom.forEach(function (client) {
+            clientsInRoomArray.push(io.sockets.sockets[client].get('nickname'));
+            /* the scrubbed one has the sanitized version as used in the username
+             * classes for typing, so we can check and avoid collisions.
+             */
+            clientsInRoomArrayScrubbed.push(io.sockets.sockets[client].get('nickname').replace(/\W/g, ''));
+         });
+
+         //check if the nickname exists
+         if(clientsInRoomArrayScrubbed.indexOf(name.replace(/\W/g, '')) != -1) {
+            denyReason = "Nickname is already taken.";
+            allowJoin = 0;
+         }
+
+         if(allowJoin) {
+            //now in the room
+            socket.join(roomID);
+            socket.set('nickname', name);
+            socket.set('roomIn', roomID);
+
+            //send the join confirmation to the client, alert the room, and push a user list
+            socket.emit("joinConfirm");
+
+            //add them to the user list since they're now a member
+            clientsInRoomArray.push(socket.get('nickname'));
+            io.sockets.in(roomID).emit("newUser", name);
+            socket.emit("userList", clientsInRoomArray);
+         } else {
+            socket.emit("joinFail", denyReason);
+         }
+
+
       });
-
-      //check if the nickname exists
-      if(clientsInRoomArrayScrubbed.indexOf(name.replace(/\W/g, '')) != -1) {
-         denyReason = "Nickname is already taken.";
-         allowJoin = 0;
-      }
-
-      if(allowJoin) {
-         //now in the room
-         socket.join(roomID);
-         socket.nickname = name;
-         socket.roomIn = roomID;
-
-         //send the join confirmation to the client, alert the room, and push a user list
-         socket.emit("joinConfirm");
-
-         //add them to the user list since they're now a member
-         clientsInRoomArray.push(socket.nickname);
-         io.sockets.in(roomID).emit("newUser", name);
-         socket.emit("userList", clientsInRoomArray);
-      } else {
-         socket.emit("joinFail", denyReason);
-      }
-
    });
 
    //emits goneuser
    socket.on('disconnect', function () {
-      io.sockets.in(socket.roomIn).emit("goneUser", socket.nickname);
+      io.sockets.in(socket.get('roomIn')).emit("goneUser", socket.get('nickname'));
+      delete socket_data[socket.id];
    });
 
    //emits chat
    socket.on("textSend", function (msg) {
       //0 = text
       var type = 0;
-      var name = socket.nickname;
+      var name = socket.get('nickname');
       var data = [type, name, msg];
-      io.sockets.in(socket.roomIn).emit("chat", data);
+      io.sockets.in(socket.get('roomIn')).emit("chat", data);
    });
    
     //lets admins un-ratelimit themselves for data
@@ -153,14 +200,14 @@ io.sockets.on("connection", function (socket) {
          lastImageSend = currTime;
          //1 = image
          var type = 1;
-         var name = socket.nickname;
+         var name = socket.get('nickname');
          var data = [type, name, msg];
-         io.sockets.in(socket.roomIn).emit("chat", data);
+         io.sockets.in(socket.get('roomIn')).emit("chat", data);
       }
    });
 
    //emits typing
    socket.on("typing", function (typing) {
-      io.sockets.in(socket.roomIn).emit("typing", [typing, socket.nickname]);
+      io.sockets.in(socket.get('roomIn')).emit("typing", [typing, socket.get('nickname')]);
    });
 });
